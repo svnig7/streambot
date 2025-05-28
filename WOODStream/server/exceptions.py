@@ -1,5 +1,5 @@
 class InvalidHash(Exception):
-    message = "Invalid hash"
+    message = "Invalid Hash"
 
 class FIleNotFound(Exception):
-    message = "File not found"
+    message = "File Not Found"

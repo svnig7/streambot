@@ -134,3 +134,8 @@ async def media_streamer(request: web.Request, db_id: str):
             "Accept-Ranges": "bytes",
         },
     )
+
+@routes.get("/file/{_id}")
+async def file_deeplink(request: web.Request):
+    _id = request.match_info["_id"]
+    raise web.HTTPFound(f"https://t.me/{WOODStream.username}?start=file_{_id}")
