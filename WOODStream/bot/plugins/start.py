@@ -52,9 +52,9 @@ async def start(bot: Client, message: Message):
                     )
 
             except FIleNotFound as e:
-                await message.reply_text("File Not Found")
+                await message.reply_text("**ғɪʟᴇ ɴᴏᴛ ғᴏᴜɴᴅ**")
             except Exception as e:
-                await message.reply_text("Something Went Wrong")
+                await message.reply_text("sᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ")
                 logging.error(e)
 
         elif "file_" in message.text:
@@ -73,13 +73,13 @@ async def start(bot: Client, message: Message):
                         pass
 
             except FIleNotFound as e:
-                await message.reply_text("**File Not Found**")
+                await message.reply_text("**ғɪʟᴇ ɴᴏᴛ ғᴏᴜɴᴅ**")
             except Exception as e:
-                await message.reply_text("Something Went Wrong")
+                await message.reply_text("sᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ")
                 logging.error(e)
 
         else:
-            await message.reply_text(f"**Invalid Command**")
+            await message.reply_text(f"**ɪɴᴠᴀʟɪᴅ ᴄᴏᴍᴍᴀɴᴅ**")
 
 @WOODStream.on_message(filters.private & filters.command(["about"]))
 async def start(bot, message):
@@ -143,7 +143,7 @@ async def my_files(bot: Client, message: Message):
         )
     file_list.append([InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="close")])
     await message.reply_photo(photo=Telegram.FILE_PIC,
-                              caption="Total files: {}".format(total_files),
+                              caption="ᴛᴏᴛᴀʟ ғɪʟᴇs : {}".format(total_files),
                               reply_markup=InlineKeyboardMarkup(file_list))
 
 
