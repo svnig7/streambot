@@ -58,7 +58,7 @@ python3 -m WOODStream
 <br>
 * Clone the repository:
 ```sh
-git clone https://github.com/svnig7/WOODStreamBot.git
+git clone https://github.com/svnig7/streambot.git
 cd WOODStreamBot
 ```
 * Build own Docker image:
