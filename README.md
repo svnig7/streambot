@@ -1,17 +1,14 @@
-<h1 align="center">WOODStreamBot</h1>
+<h1 align="center">sᴛʀᴇᴀᴍ ʙᴏᴛ</h1>
 <p align="center">
-  <a href="https://github.com/svnig7/WOODStreamBot">
+  <a href="https://github.com/svnig7/streambot">
     <img src="https://raw.githubusercontent.com/svnig7/images/refs/heads/main/streambotl.png" alt="Cover Image" width="550">
   </a>
 </p>  
-
-
 
 ### 🍁 About :
 <p align='center'>
   This bot provides stream links for Telegram files without the necessity of waiting for the download to complete, offering the ability to store files.
 </p>
-
 
 ### ♢ How to Deploy :
 
@@ -27,7 +24,6 @@
 - Click on Deploy Easily
 - Press the below button to Fast deploy on Heroku
 
-
    [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 - Go to <a href="#mandatory-vars">variables tab</a> for more info on setting up environmental variables. </details>
 
@@ -36,7 +32,7 @@
 <br>
 
 ```sh
-git clone https://github.com/svnig7/WOODStreamBot
+git clone https://github.com/svnig7/streambot.git
 cd WOODStreamBot
 python3 -m venv ./venv
 . ./venv/bin/activate
@@ -62,7 +58,7 @@ python3 -m WOODStream
 <br>
 * Clone the repository:
 ```sh
-git clone https://github.com/svnig7/WOODStreamBot
+git clone https://github.com/svnig7/WOODStreamBot.git
 cd WOODStreamBot
 ```
 * Build own Docker image:
@@ -87,7 +83,6 @@ docker restart fsb
 <details>
   <summary><b>Setting up things :</b></summary>
 
-
 If you're on Heroku, just add these in the Environmental Variables
 or if you're Locally hosting, create a file named `.env` in the root directory and add all the variables there.
 An example of `.env` file:
@@ -104,7 +99,6 @@ OWNER_ID = 987456321
 PORT = 8080
 ```
 </details>
-
 
 <details>
   <summary><b>Vars and Details :</b></summary>
@@ -165,9 +159,6 @@ broadcast - ᴛᴏ ʙʀᴏᴀᴅᴄᴀsᴛ ᴀɴʏ ᴍᴇssᴀɢᴇ ᴛᴏ ᴀʟ
 
 ### ❤️ To :
 
-- [**sᴠɴ**](https://github.com/svnig7) : for his [WOODStreamBot](https://github.com/svnig7/WOODStreamBot)
+- [**sᴠɴ**](https://github.com/svnig7) : for his [sᴛʀᴇᴀᴍ ʙᴏᴛ](https://github.com/svnig7/streambot)
 
 ---
-
-
-
