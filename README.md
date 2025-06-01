@@ -31,23 +31,27 @@
   <summary><b>Deploy Locally :</b></summary>
 <br>
 
-```sh
+```
 git clone https://github.com/svnig7/streambot.git
-cd WOODStreamBot
+```
+```
+cd streambot
+```
+```
 python3 -m venv ./venv
 . ./venv/bin/activate
 pip install -r requirements.txt
-python3 -m WOODStream
+python3 -m streambot
 ```
 
 - To stop the whole bot,
  do <kbd>CTRL</kbd>+<kbd>C</kbd>
 
 - If you want to run this bot 24/7 on the VPS, follow these steps.
-```sh
+```
 sudo apt install tmux -y
 tmux
-python3 -m WOODStream
+python3 -m streambot
 ```
 - now you can close the VPS and the bot will run on it.
 
@@ -57,26 +61,33 @@ python3 -m WOODStream
   <summary><b>Deploy using Docker :</b></summary>
 <br>
 * Clone the repository:
-```sh
-git clone https://github.com/svnig7/streambot.git
-cd WOODStreamBot
-```
+  
+  ```
+  git clone https://github.com/svnig7/streambot.git
+  ```
+  ```
+  cd streambot
+  ```
+  
 * Build own Docker image:
-```sh
-docker build -t file-stream .
-```
+  
+  ```
+  docker build -t file-stream .
+  ```
 
 * Create ENV and Start Container:
-```sh
-docker run -d --restart unless-stopped --name fsb \
--v /PATH/TO/.env:/app/.env \
--p 8000:8000 \
-file-stream
-```
+
+  ```
+  docker run -d --restart unless-stopped --name fsb\ -v /PATH/TO/.env:/app/.env \
+  -p 8000:8000 \
+  file-stream
+  ```
+  
 - if you need to change the variables in .env file after your bot was already started, all you need to do is restart the container for the bot settings to get updated:
-```sh
-docker restart fsb
-```
+
+  ```
+  docker restart fsb
+  ```
 
   </details>
 
