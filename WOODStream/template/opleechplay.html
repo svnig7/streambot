@@ -8,7 +8,6 @@
   <link rel="shortcut icon" href="https://raw.githubusercontent.com/svnig7/images/refs/heads/main/streambot.png" type="image/x-icon">
   
   <!-- CSS Libraries -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
   
@@ -118,9 +117,22 @@
       -webkit-text-fill-color: transparent;
     }
     
-    .filename-full {
+    .file-name-full {
       word-break: break-all;
       white-space: normal;
+    }
+    
+    .plyr__control--overlaid {
+      background: rgba(99, 102, 241, 0.8);
+    }
+    
+    .plyr--video .plyr__control:hover,
+    .plyr--video .plyr__control[aria-expanded="true"] {
+      background: var(--primary-color);
+    }
+    
+    .plyr__menu__container .plyr__control[role="menuitemradio"][aria-checked="true"]::before {
+      background: var(--primary-color);
     }
     
     @media (max-width: 768px) {
@@ -142,14 +154,6 @@
     *:focus {
       outline: none;
     }
-    
-    /* Remove text selection highlighting */
-    * {
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
   </style>
 </head>
 
@@ -165,30 +169,25 @@
   <div class="container mx-auto px-4">
     <!-- Video Player Section -->
     <div class="video-container">
-      <video id="player" class="player" playsinline controls width="100%">
-        <source src="{{file_url}}" type="video/mp4">
+      <video id="player" playsinline controls>
+        <source src="{{file_url}}" type="video/mp4" />
         
-        <!-- Multiple audio tracks -->
-        <audio id="english-audio" kind="alternative" srclang="en" label="English" src="{{file_url}}#t=0" default></audio>
-        <audio id="hindi-audio" kind="alternative" srclang="hi" label="Hindi" src="{{file_url}}#t=0"></audio>
+        <!-- Sample tracks (replace with your actual tracks) -->
+        <track kind="captions" label="English" srclang="en" src="path/to/subtitles.vtt" default />
+        <track kind="captions" label="Spanish" srclang="es" src="path/to/subtitles-es.vtt" />
         
-        <!-- Multiple subtitle tracks -->
-        <track kind="subtitles" srclang="en" label="English" src="subtitles_en.vtt" default>
-        <track kind="subtitles" srclang="hi" label="Hindi" src="subtitles_hi.vtt">
-        <track kind="subtitles" srclang="es" label="Spanish" src="subtitles_es.vtt">
+        <!-- Fallback for browsers that don't support the video element -->
+        Your browser doesn't support HTML5 video.
       </video>
     </div>
     
     <!-- File Information -->
     <div class="file-info">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="flex flex-col">
-          <div class="flex items-center">
+        <div class="flex items-start flex-col">
+          <div class="flex">
             <h4>File Name:</h4>
-            <p class="truncate">{{file_name}}</p>
-          </div>
-          <div class="mt-2">
-            <p class="filename-full text-sm text-gray-300">{{file_name_full}}</p>
+            <p class="file-name-full">{{file_name}}</p>
           </div>
         </div>
         <div class="flex items-center">
@@ -269,79 +268,92 @@
   <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
   
   <script>
-    // Initialize Plyr video player with full controls
-    const player = new Plyr('#player', {
-      controls: [
-        'play-large',
-        'play',
-        'progress',
-        'current-time',
-        'mute',
-        'volume',
-        'captions',
-        'settings',
-        'pip',
-        'airplay',
-        'fullscreen'
-      ],
-      settings: ['captions', 'quality', 'speed', 'loop'],
-      keyboard: { focused: true, global: true },
-      captions: { active: true, language: 'auto', update: true }
-    });
-    
-    // Get video duration after metadata loads
-    document.getElementById('player').addEventListener('loadedmetadata', function() {
-      const duration = this.duration;
-      const hours = Math.floor(duration / 3600);
-      const minutes = Math.floor((duration % 3600) / 60);
-      const seconds = Math.floor(duration % 60);
-      
-      document.querySelector('.file-info div:nth-child(3) p').textContent = 
-        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    });
-    
-    // Share button functionality
-    document.getElementById('shareBtn').addEventListener('click', function() {
-      if (navigator.share) {
-        navigator.share({
-          title: 'Check out this video',
-          text: 'Watch {{file_name}} on Premium Stream',
-          url: window.location.href
-        }).catch(err => {
-          console.log('Error sharing:', err);
-          copyToClipboard(window.location.href);
-        });
-      } else {
-        copyToClipboard(window.location.href);
-      }
-    });
-    
-    // Fallback copy to clipboard function
-    function copyToClipboard(text) {
-      const textarea = document.createElement('textarea');
-      textarea.value = text;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-      
-      alert('Link copied to clipboard: ' + text);
-    }
-    
-    // Enable multiple audio tracks
-    player.on('ready', event => {
-      const instance = event.detail.plyr;
-      
-      // Add audio tracks to the settings menu
-      if (instance) {
-        const audioTracks = [
-          { id: 'english-audio', label: 'English', language: 'en' },
-          { id: 'hindi-audio', label: 'Hindi', language: 'hi' }
-        ];
+    // Custom forward/backward buttons
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize Plyr player with enhanced controls
+      const player = new Plyr('#player', {
+        controls: [
+          'play-large',
+          'rewind',
+          'play',
+          'fast-forward',
+          'progress',
+          'current-time',
+          'duration',
+          'mute',
+          'volume',
+          'captions',
+          'settings',
+          'pip',
+          'airplay',
+          'fullscreen'
+        ],
+        settings: ['captions', 'quality', 'speed'],
+        keyboard: { 
+          focused: true, 
+          global: true,
+          seek: 10 // Seek 10 seconds when using arrow keys
+        },
+        tooltips: {
+          controls: true,
+          seek: true
+        },
+        seekTime: 10, // Seek 10 seconds when clicking progress bar
+        i18n: {
+          rewind: 'Rewind 10s',
+          fastForward: 'Forward 10s'
+        }
+      });
+
+      // Custom rewind button functionality
+      player.elements.controls.querySelector('.plyr__control--rewind').addEventListener('click', (e) => {
+        e.preventDefault();
+        player.rewind(10);
+      });
+
+      // Custom fast forward button functionality
+      player.elements.controls.querySelector('.plyr__control--fast-forward').addEventListener('click', (e) => {
+        e.preventDefault();
+        player.forward(10);
+      });
+
+      // Get video duration after metadata loads
+      player.on('loadedmetadata', () => {
+        const duration = player.duration;
+        const hours = Math.floor(duration / 3600);
+        const minutes = Math.floor((duration % 3600) / 60);
+        const seconds = Math.floor(duration % 60);
         
-        audioTracks.forEach(track => {
-          instance.addAudioTrack(track);
-        });
+        document.querySelector('.file-info div:nth-child(3) p').textContent = 
+          `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      });
+
+      // Share button functionality
+      document.getElementById('shareBtn').addEventListener('click', function() {
+        if (navigator.share) {
+          navigator.share({
+            title: 'Check out this video',
+            text: 'Watch {{file_name}} on Premium Stream',
+            url: window.location.href
+          }).catch(err => {
+            console.log('Error sharing:', err);
+            copyToClipboard(window.location.href);
+          });
+        } else {
+          copyToClipboard(window.location.href);
+        }
+      });
+
+      // Fallback copy to clipboard function
+      function copyToClipboard(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        
+        alert('Link copied to clipboard: ' + text);
       }
     });
   </script>
