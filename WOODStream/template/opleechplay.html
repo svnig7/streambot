@@ -303,11 +303,9 @@
         'duration',
         'mute',
         'volume',
-        'settings',
         'fullscreen'
       ],
       keyboard: { focused: true, global: true },
-      tooltips: { controls: true, seek: true },
       seekTime: 10
     });
 
@@ -323,19 +321,16 @@
     // Get video duration after metadata loads
     const videoElement = document.getElementById('player');
     videoElement.addEventListener('loadedmetadata', function() {
-      const duration = videoElement.duration;
-      updateDurationDisplay(duration);
+      updateDurationDisplay();
     });
 
-    // Fallback in case loadedmetadata doesn't fire
-    const checkDuration = setInterval(() => {
-      if (videoElement.duration && videoElement.duration !== Infinity) {
-        updateDurationDisplay(videoElement.duration);
-        clearInterval(checkDuration);
+    function updateDurationDisplay() {
+      const duration = videoElement.duration;
+      if (isNaN(duration)) {
+        document.getElementById('durationDisplay').textContent = '--:--:--';
+        return;
       }
-    }, 500);
-
-    function updateDurationDisplay(duration) {
+      
       const hours = Math.floor(duration / 3600);
       const minutes = Math.floor((duration % 3600) / 60);
       const seconds = Math.floor(duration % 60);
@@ -343,51 +338,47 @@
       document.getElementById('durationDisplay').textContent = 
         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
-    
+
     // Share button functionality
     document.getElementById('shareBtn').addEventListener('click', function(e) {
       e.preventDefault();
-      const videoUrl = window.location.href;
-      const shareText = `Check out this video: ${document.title}`;
+      const shareData = {
+        title: 'Check out this video',
+        text: 'Watch ' + document.querySelector('.full-filename').textContent + ' on Premium Stream',
+        url: window.location.href
+      };
       
-      if (navigator.share) {
-        navigator.share({
-          title: document.title,
-          text: shareText,
-          url: videoUrl
-        }).catch(err => {
-          console.log('Error sharing:', err);
-          copyToClipboard(videoUrl);
-        });
-      } else {
-        copyToClipboard(videoUrl);
+      try {
+        if (navigator.share && navigator.canShare(shareData)) {
+          navigator.share(shareData)
+            .catch(err => {
+              console.log('Error sharing:', err);
+              fallbackShare();
+            });
+        } else {
+          fallbackShare();
+        }
+      } catch (err) {
+        fallbackShare();
       }
-      return false;
     });
     
-    // Fallback copy to clipboard function
-    function copyToClipboard(text) {
-      try {
-        navigator.clipboard.writeText(text).then(() => {
-          alert('Link copied to clipboard:\n' + text);
-        }).catch(err => {
-          // Fallback for older browsers
-          const textarea = document.createElement('textarea');
-          textarea.value = text;
-          document.body.appendChild(textarea);
-          textarea.select();
-          document.execCommand('copy');
-          document.body.removeChild(textarea);
-          alert('Link copied to clipboard:\n' + text);
-        });
-      } catch (err) {
-        console.error('Failed to copy:', err);
-        prompt('Copy this link:', text);
-      }
+    function fallbackShare() {
+      const shareUrl = window.location.href;
+      const tempInput = document.createElement('input');
+      tempInput.value = shareUrl;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      
+      alert('Link copied to clipboard:\n' + shareUrl);
     }
 
     // Keyboard shortcuts for skipping
     document.addEventListener('keydown', function(e) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      
       const video = document.getElementById('player');
       if (e.key === 'ArrowRight') {
         video.currentTime += 10;
@@ -395,6 +386,14 @@
         video.currentTime -= 10;
       }
     });
+
+    // Periodically check duration in case metadata loads late
+    const durationCheckInterval = setInterval(() => {
+      if (videoElement.readyState > 0) {
+        updateDurationDisplay();
+        clearInterval(durationCheckInterval);
+      }
+    }, 500);
   </script>
 </body>
 
