@@ -4,378 +4,394 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PREMIUM STREAM | {{file_name}}</title>
+  <title>ғɪʟᴇ sᴛʀᴇᴀᴍ | {{file_name}}</title>
   <link rel="shortcut icon" href="https://raw.githubusercontent.com/svnig7/images/refs/heads/main/streambot.png" type="image/x-icon">
   <link rel="stylesheet" href="https://unpkg.com/sheryjs/dist/Shery.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
     :root {
-      --primary: #6366f1;
-      --primary-dark: #4f46e5;
-      --secondary: #f43f5e;
-      --dark: #1e293b;
-      --light: #f8fafc;
-      --gray: #94a3b8;
-    }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
+      --primary-color: #6c5ce7;
+      --secondary-color: #a29bfe;
+      --accent-color: #fd79a8;
+      --dark-color: #2d3436;
+      --light-color: #f5f6fa;
     }
     
     body {
-      background-color: #0f172a;
-      color: var(--light);
-      min-height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      background-color: #0f0f0f;
+      color: var(--light-color);
     }
     
-    .navbar {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      padding: 1.2rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    nav {
+      background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+      padding: 20px;
+      text-align: center;
       box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
       position: relative;
       z-index: 100;
     }
     
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    
-    .logo-icon {
-      color: var(--primary);
-      font-size: 1.75rem;
-    }
-    
-    .logo-text {
-      font-size: 1.5rem;
-      font-weight: 700;
-      background: linear-gradient(to right, #6366f1, #f43f5e);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    .premium-badge {
-      background: linear-gradient(135deg, #f59e0b, #f43f5e);
+    #heading {
       color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      margin-left: 0.5rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-    
-    .file-info {
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(10px);
-      border-radius: 0.75rem;
-      padding: 1.5rem;
-      margin: 1.5rem auto;
-      max-width: 1200px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .file-info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-    }
-    
-    .info-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    
-    .info-icon {
-      color: var(--primary);
-      font-size: 1.25rem;
-      min-width: 24px;
-    }
-    
-    .info-label {
-      color: var(--gray);
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-    
-    .info-value {
-      font-weight: 600;
-      margin-top: 0.25rem;
-    }
-    
-    .download-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: linear-gradient(to right, var(--primary), var(--primary-dark));
-      color: white;
-      padding: 0.75rem 1.5rem;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      text-decoration: none;
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 10px rgba(108, 92, 231, 0.5);
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
     }
     
-    .download-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    #heading:hover {
+      color: var(--secondary-color);
+      text-shadow: 0 2px 20px rgba(162, 155, 254, 0.7);
+    }
+    
+    .outer {
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
     }
     
     .player-container {
-      max-width: 1200px;
-      margin: 2rem auto;
-      border-radius: 0.75rem;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    }
-    
-    .plyr--full-ui input[type="range"] {
-      color: var(--primary);
-    }
-    
-    .plyr__control--overlaid {
-      background: rgba(99, 102, 241, 0.8);
-    }
-    
-    .plyr--video .plyr__control:hover {
-      background: var(--primary);
-    }
-    
-    .plyr__menu__container .plyr__control[role="menuitemradio"][aria-checked="true"]::before {
-      background: var(--primary);
-    }
-    
-    .features {
-      max-width: 1200px;
-      margin: 3rem auto;
-      padding: 0 1.5rem;
-    }
-    
-    .features-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      margin-bottom: 2rem;
+      background: #1a1a1a;
       position: relative;
     }
     
-    .features-title::after {
-      content: '';
-      display: block;
-      width: 80px;
-      height: 4px;
-      background: linear-gradient(to right, var(--primary), var(--secondary));
-      margin: 0.75rem auto 0;
-      border-radius: 2px;
-    }
-    
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-    
-    .feature-card {
-      background: rgba(30, 41, 59, 0.7);
+    .file-info {
+      background: rgba(26, 26, 26, 0.8);
       backdrop-filter: blur(10px);
-      border-radius: 0.75rem;
+      border-radius: 12px;
       padding: 1.5rem;
-      transition: all 0.3s ease;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 2rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
     
-    .feature-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    }
-    
-    .feature-icon {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      background: linear-gradient(to right, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    .feature-title {
-      font-size: 1.1rem;
+    .file-info h4 {
+      color: var(--secondary-color);
       font-weight: 600;
-      margin-bottom: 0.5rem;
+      display: inline-block;
+      min-width: 120px;
     }
     
-    .feature-desc {
-      color: var(--gray);
-      font-size: 0.9rem;
-      line-height: 1.6;
+    .file-info p, .file-info a {
+      color: var(--light-color);
+      font-weight: 300;
+    }
+    
+    .file-info a:hover {
+      color: var(--accent-color);
+      text-decoration: none;
+    }
+    
+    .premium-badge {
+      background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+      color: var(--dark-color);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+      display: inline-block;
+    }
+    
+    .settings-panel {
+      background: rgba(26, 26, 26, 0.95);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .settings-title {
+      color: var(--secondary-color);
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .quality-selector {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .quality-btn {
+      background: rgba(108, 92, 231, 0.2);
+      color: var(--secondary-color);
+      border: 1px solid var(--primary-color);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .quality-btn:hover, .quality-btn.active {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    .recommended-series {
+      margin-top: 3rem;
+    }
+    
+    .series-title {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .splide__slide {
+      margin-right: 1rem;
+    }
+    
+    .series-card {
+      background: #1a1a1a;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .series-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+    
+    .series-thumbnail {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+    
+    .series-info {
+      padding: 1rem;
+    }
+    
+    .series-name {
+      color: white;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .series-meta {
+      display: flex;
+      justify-content: space-between;
+      color: #aaa;
+      font-size: 0.8rem;
+    }
+    
+    .floating-download {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--primary-color);
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 20px rgba(108, 92, 231, 0.5);
+      cursor: pointer;
+      z-index: 50;
+      transition: all 0.3s ease;
+    }
+    
+    .floating-download:hover {
+      transform: scale(1.1);
+      background: var(--accent-color);
+      box-shadow: 0 5px 25px rgba(253, 121, 168, 0.6);
     }
     
     @media (max-width: 768px) {
-      .navbar {
+      .outer {
         padding: 1rem;
       }
       
-      .logo-text {
-        font-size: 1.25rem;
+      .file-info h4 {
+        display: block;
+        margin-bottom: 0.3rem;
       }
       
-      .file-info {
-        padding: 1rem;
-        margin: 1rem;
-      }
-      
-      .player-container {
-        margin: 1rem;
+      .series-thumbnail {
+        height: 120px;
       }
     }
   </style>
 </head>
 
 <body>
-  <nav class="navbar">
-    <div class="logo">
-      <i class="fas fa-play-circle logo-icon"></i>
-      <span class="logo-text">PREMIUM STREAM<span class="premium-badge"><i class="fas fa-crown"></i> PRO</span></span>
-    </div>
-    <a href="https://t.me/strm_7bot" target="_blank" class="download-btn">
-      <i class="fas fa-robot"></i> Get the Bot
+  <nav class="flex justify-center items-center">
+    <a href="https://t.me/strm_7bot" target="_blank" class="text-white text-2xl font-bold" id="heading">
+      <i class="fas fa-play-circle mr-2"></i> sᴛʀᴇᴀᴍ ʙᴏᴛ <span class="premium-badge">PREMIUM</span>
     </a>
   </nav>
 
-  <div class="player-container">
-    <video id="player" playsinline controls data-poster="{{thumbnail_url}}">
-      <source src="{{file_url}}" type="video/mp4" />
-      <!-- Fallback for browsers that don't support the video element -->
-      <a href="{{file_url}}" download>Download Video</a>
-    </video>
+  <div class="outer">
+    <div class="player-container">
+      <video id="player" playsinline controls data-poster="{{thumbnail_url}}">
+        <source src="{{file_url}}" type="video/mp4" />
+        <!-- Multiple quality sources can be added here -->
+        <track kind="captions" label="English" src="{{caption_url}}" srclang="en" default />
+      </video>
+    </div>
+
+    <div class="file-info">
+      <div class="mb-3">
+        <h4><i class="fas fa-file-alt mr-2"></i>ғɪʟᴇ ɴᴀᴍᴇ:</h4>
+        <p>{{file_name}}</p>
+      </div>
+      <div class="mb-3">
+        <h4><i class="fas fa-weight-hanging mr-2"></i>ғɪʟᴇ sɪᴢᴇ:</h4>
+        <p>{{file_size}}</p>
+      </div>
+      <div class="mb-3">
+        <h4><i class="fas fa-clock mr-2"></i>ᴅᴜʀᴀᴛɪᴏɴ:</h4>
+        <p>{{duration}}</p>
+      </div>
+      <div class="mb-3">
+        <h4><i class="fas fa-download mr-2"></i>ᴅᴏᴡɴʟᴏᴀᴅ:</h4>
+        <a href="{{file_url}}" download="{{file_name}}" class="hover:text-accent-color">
+          <i class="fas fa-cloud-download-alt mr-1"></i> ʜɪɢʜ ǫᴜᴀʟɪᴛʏ
+        </a>
+        <span class="mx-2">|</span>
+        <a href="{{compressed_file_url}}" download="{{compressed_file_name}}" class="hover:text-accent-color">
+          <i class="fas fa-file-archive mr-1"></i> ᴄᴏᴍᴘʀᴇssᴇᴅ
+        </a>
+      </div>
+    </div>
+
+    <div class="settings-panel">
+      <h3 class="settings-title"><i class="fas fa-cog mr-2"></i>PLAYER SETTINGS</h3>
+      <div class="mb-4">
+        <h4 class="text-white mb-2"><i class="fas fa-tachometer-alt mr-2"></i>Quality:</h4>
+        <div class="quality-selector">
+          <button class="quality-btn active" data-quality="1080">1080p</button>
+          <button class="quality-btn" data-quality="720">720p</button>
+          <button class="quality-btn" data-quality="480">480p</button>
+          <button class="quality-btn" data-quality="360">360p</button>
+          <button class="quality-btn" data-quality="auto">Auto</button>
+        </div>
+      </div>
+      <div>
+        <h4 class="text-white mb-2"><i class="fas fa-closed-captioning mr-2"></i>Subtitles:</h4>
+        <div class="quality-selector">
+          <button class="quality-btn active">English</button>
+          <button class="quality-btn">Spanish</button>
+          <button class="quality-btn">French</button>
+          <button class="quality-btn">None</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="recommended-series">
+      <h3 class="series-title"><i class="fas fa-fire mr-2"></i>RECOMMENDED FOR YOU</h3>
+      <div class="splide" id="series-slider">
+        <div class="splide__track">
+          <ul class="splide__list">
+            <li class="splide__slide">
+              <div class="series-card">
+                <img src="https://via.placeholder.com/300x180" alt="Series 1" class="series-thumbnail">
+                <div class="series-info">
+                  <h5 class="series-name">The Last Kingdom</h5>
+                  <div class="series-meta">
+                    <span>Season 5</span>
+                    <span>HD</span>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="splide__slide">
+              <div class="series-card">
+                <img src="https://via.placeholder.com/300x180" alt="Series 2" class="series-thumbnail">
+                <div class="series-info">
+                  <h5 class="series-name">Stranger Things</h5>
+                  <div class="series-meta">
+                    <span>Season 4</span>
+                    <span>4K</span>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="splide__slide">
+              <div class="series-card">
+                <img src="https://via.placeholder.com/300x180" alt="Series 3" class="series-thumbnail">
+                <div class="series-info">
+                  <h5 class="series-name">The Witcher</h5>
+                  <div class="series-meta">
+                    <span>Season 2</span>
+                    <span>HD</span>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="splide__slide">
+              <div class="series-card">
+                <img src="https://via.placeholder.com/300x180" alt="Series 4" class="series-thumbnail">
+                <div class="series-info">
+                  <h5 class="series-name">Peaky Blinders</h5>
+                  <div class="series-meta">
+                    <span>Season 6</span>
+                    <span>HD</span>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="splide__slide">
+              <div class="series-card">
+                <img src="https://via.placeholder.com/300x180" alt="Series 5" class="series-thumbnail">
+                <div class="series-info">
+                  <h5 class="series-name">The Mandalorian</h5>
+                  <div class="series-meta">
+                    <span>Season 3</span>
+                    <span>4K</span>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="file-info">
-    <div class="file-info-grid">
-      <div class="info-item">
-        <i class="fas fa-file-alt info-icon"></i>
-        <div>
-          <div class="info-label">FILE NAME</div>
-          <div class="info-value">{{file_name}}</div>
-        </div>
-      </div>
-      
-      <div class="info-item">
-        <i class="fas fa-database info-icon"></i>
-        <div>
-          <div class="info-label">FILE SIZE</div>
-          <div class="info-value">{{file_size}}</div>
-        </div>
-      </div>
-      
-      <div class="info-item">
-        <i class="fas fa-expand info-icon"></i>
-        <div>
-          <div class="info-label">RESOLUTION</div>
-          <div class="info-value">{{resolution}}</div>
-        </div>
-      </div>
-      
-      <div class="info-item">
-        <i class="fas fa-clock info-icon"></i>
-        <div>
-          <div class="info-label">DURATION</div>
-          <div class="info-value">{{duration}}</div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="mt-6 flex flex-wrap gap-4">
-      <a href="{{file_url}}" download="{{file_name}}" class="download-btn">
-        <i class="fas fa-download"></i> Download Now
-      </a>
-      <button id="quality-btn" class="download-btn bg-gradient-to-r from-rose-500 to-amber-500">
-        <i class="fas fa-sliders-h"></i> Quality Options
-      </button>
-      <button id="subtitle-btn" class="download-btn bg-gradient-to-r from-emerald-500 to-cyan-500">
-        <i class="fas fa-closed-captioning"></i> Subtitles
-      </button>
-    </div>
-  </div>
-
-  <div class="features">
-    <h2 class="features-title">PREMIUM FEATURES</h2>
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-tachometer-alt"></i>
-        </div>
-        <h3 class="feature-title">High-Speed Streaming</h3>
-        <p class="feature-desc">Enjoy buffer-free streaming with our premium CDN network that delivers content at lightning speed.</p>
-      </div>
-      
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-layer-group"></i>
-        </div>
-        <h3 class="feature-title">Multiple Quality Options</h3>
-        <p class="feature-desc">Switch between 360p, 480p, 720p, 1080p, and 4K resolutions based on your connection speed.</p>
-      </div>
-      
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-closed-captioning"></i>
-        </div>
-        <h3 class="feature-title">Subtitles Support</h3>
-        <p class="feature-desc">Multiple subtitle tracks available for international content. Turn them on/off as needed.</p>
-      </div>
-      
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-mobile-alt"></i>
-        </div>
-        <h3 class="feature-title">Cross-Device Support</h3>
-        <p class="feature-desc">Stream seamlessly on mobile, tablet, desktop, or smart TV with adaptive bitrate streaming.</p>
-      </div>
-      
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-cloud-download-alt"></i>
-        </div>
-        <h3 class="feature-title">Fast Downloads</h3>
-        <p class="feature-desc">Premium download speeds with resume capability for interrupted downloads.</p>
-      </div>
-      
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-lock"></i>
-        </div>
-        <h3 class="feature-title">Secure Streaming</h3>
-        <p class="feature-desc">All streams are encrypted for your privacy and security.</p>
-      </div>
-    </div>
-  </div>
+  <a href="{{file_url}}" download="{{file_name}}" class="floating-download" title="Download">
+    <i class="fas fa-download fa-lg"></i>
+  </a>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.155.0/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/automat/controlkit.js@master/bin/controlKit.min.js"></script>
-  <script src="https://unpkg.com/sheryjs/dist/Shery.js"></script>
-  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sheryjs/dist/Shery.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+  
   <script>
-    // Initialize Plyr player
+    // Initialize Plyr video player
     const player = new Plyr('#player', {
       controls: [
         'play-large',
@@ -391,60 +407,88 @@
         'fullscreen'
       ],
       settings: ['quality', 'speed', 'loop'],
-      keyboard: { focused: true, global: true },
-      tooltips: { controls: true, seek: true },
-      speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] }
-    });
-    
-    // Quality button functionality
-    document.getElementById('quality-btn').addEventListener('click', () => {
-      const settingsMenu = document.querySelector('.plyr__menu__container [role="menu"]');
-      const qualityItem = Array.from(document.querySelectorAll('.plyr__control[role="menuitemradio"]'))
-        .find(item => item.textContent.includes('Quality'));
-      
-      if (qualityItem) {
-        qualityItem.click();
-      } else if (settingsMenu) {
-        // If quality option isn't directly available, open settings
-        document.querySelector('.plyr__control[data-plyr="settings"]').click();
+      speed: {
+        selected: 1,
+        options: [0.5, 0.75, 1, 1.25, 1.5, 2]
+      },
+      keyboard: {
+        focused: true,
+        global: true
+      },
+      tooltips: {
+        controls: true,
+        seek: true
       }
     });
     
-    // Subtitle button functionality
-    document.getElementById('subtitle-btn').addEventListener('click', () => {
-      const captionsButton = document.querySelector('.plyr__control[data-plyr="captions"]');
-      if (captionsButton) {
-        captionsButton.click();
-      }
-    });
-    
-    // Animate elements on scroll
-    gsap.registerPlugin(ScrollTrigger);
-    
-    gsap.utils.toArray('.feature-card').forEach(card => {
-      gsap.from(card, {
-        scrollTrigger: {
-          trigger: card,
-          start: "top 80%",
-          toggleActions: "play none none none"
+    // Initialize recommended series slider
+    new Splide('#series-slider', {
+      type: 'slide',
+      perPage: 4,
+      perMove: 1,
+      gap: '1rem',
+      pagination: false,
+      breakpoints: {
+        1024: {
+          perPage: 3,
         },
-        y: 50,
-        opacity: 0,
-        duration: 0.8,
-        ease: "power2.out"
+        768: {
+          perPage: 2,
+        },
+        480: {
+          perPage: 1,
+        }
+      }
+    }).mount();
+    
+    // Quality selector functionality
+    document.querySelectorAll('.quality-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.quality-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // In a real implementation, this would switch the video source
+        console.log('Switched to quality:', this.dataset.quality);
       });
     });
     
-    // Initialize Shery.js effects
-    Shery.mouseFollower({
-      skew: true,
-      ease: "cubic-bezier(0.23, 1, 0.320, 1)",
-      duration: 0.5
+    // Floating download button animation
+    gsap.from('.floating-download', {
+      y: 50,
+      opacity: 0,
+      duration: 1,
+      delay: 1,
+      ease: 'back.out(1.7)'
     });
     
-    Shery.makeMagnet(".download-btn", {
-      ease: "cubic-bezier(0.23, 1, 0.320, 1)",
-      duration: 0.5
+    // Shery.js animations
+    Shery.imageEffect("#heading", {
+      style: 5,
+      config: {
+        a: { value: 1.49, range: [0, 30] },
+        b: { value: -0.98, range: [-1, 1] },
+        zindex: { value: -9996999, range: [-9999999, 9999999] },
+        aspect: { value: 1.882300518134715 },
+        gooey: { value: true },
+        infiniteGooey: { value: true },
+        growSize: { value: 4, range: [1, 15] },
+        durationOut: { value: 1, range: [0.1, 5] },
+        durationIn: { value: 1.5, range: [0.1, 5] },
+        displaceAmount: { value: 0.5 },
+        masker: { value: true },
+        maskVal: { value: 1.3, range: [1, 5] },
+        scrollType: { value: 0 },
+        geoVertex: { range: [1, 64], value: 1 },
+        noEffectGooey: { value: false },
+        onMouse: { value: 1 },
+        noise_speed: { value: 0.2, range: [0, 10] },
+        metaball: { value: 0.2, range: [0, 2] },
+        discard_threshold: { value: 0.5, range: [0, 1] },
+        antialias_threshold: { value: 0, range: [0, 0.1] },
+        noise_height: { value: 0.5, range: [0, 2] },
+        noise_scale: { value: 10, range: [0, 100] },
+      },
+      gooey: true,
     });
   </script>
 </body>
