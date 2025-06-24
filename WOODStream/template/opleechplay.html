@@ -227,7 +227,7 @@
         <a href="{{file_url}}" download="{{file_name}}" class="download-btn">
           <i class="fas fa-download"></i> Download
         </a>
-        <button id="shareBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-full">
+        <button id="shareBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-full flex items-center">
           <i class="fas fa-share-alt mr-2"></i> Share
         </button>
       </div>
@@ -291,109 +291,114 @@
   <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
   
   <script>
-    // Initialize Plyr video player with custom controls
-    const player = new Plyr('#player', {
-      controls: [
-        'play-large',
-        'rewind',
-        'play',
-        'fast-forward',
-        'progress',
-        'current-time',
-        'duration',
-        'mute',
-        'volume',
-        'fullscreen'
-      ],
-      keyboard: { focused: true, global: true },
-      seekTime: 10
-    });
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize Plyr video player with custom controls
+      const player = new Plyr('#player', {
+        controls: [
+          'play-large',
+          'rewind',
+          'play',
+          'fast-forward',
+          'progress',
+          'current-time',
+          'duration',
+          'mute',
+          'volume',
+          'fullscreen'
+        ],
+        keyboard: { focused: true, global: true },
+        seekTime: 10
+      });
 
-    // Customize the rewind/fast-forward buttons
-    player.elements.controls.querySelector('.plyr__control--rewind').innerHTML = 
-      '<button type="button" class="plyr__control" data-plyr="rewind" aria-label="Rewind 10s">' +
-      '<i class="fas fa-backward"></i><span>10s</span></button>';
-
-    player.elements.controls.querySelector('.plyr__control--fast-forward').innerHTML = 
-      '<button type="button" class="plyr__control" data-plyr="fast-forward" aria-label="Forward 10s">' +
-      '<span>10s</span><i class="fas fa-forward"></i></button>';
-
-    // Get video duration after metadata loads
-    const videoElement = document.getElementById('player');
-    videoElement.addEventListener('loadedmetadata', function() {
-      updateDurationDisplay();
-    });
-
-    function updateDurationDisplay() {
-      const duration = videoElement.duration;
-      if (isNaN(duration)) {
-        document.getElementById('durationDisplay').textContent = '--:--:--';
-        return;
+      // Get video element
+      const videoElement = document.getElementById('player');
+      
+      // Function to format time
+      function formatTime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = Math.floor(seconds % 60);
+        
+        return [
+          hours.toString().padStart(2, '0'),
+          minutes.toString().padStart(2, '0'),
+          secs.toString().padStart(2, '0')
+        ].join(':');
       }
-      
-      const hours = Math.floor(duration / 3600);
-      const minutes = Math.floor((duration % 3600) / 60);
-      const seconds = Math.floor(duration % 60);
-      
-      document.getElementById('durationDisplay').textContent = 
-        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    }
 
-    // Share button functionality
-    document.getElementById('shareBtn').addEventListener('click', function(e) {
-      e.preventDefault();
-      const shareData = {
-        title: 'Check out this video',
-        text: 'Watch ' + document.querySelector('.full-filename').textContent + ' on Premium Stream',
-        url: window.location.href
-      };
-      
-      try {
-        if (navigator.share && navigator.canShare(shareData)) {
-          navigator.share(shareData)
-            .catch(err => {
-              console.log('Error sharing:', err);
-              fallbackShare();
-            });
-        } else {
-          fallbackShare();
+      // Update duration display
+      function updateDurationDisplay() {
+        if (videoElement.readyState > 0) {
+          const duration = videoElement.duration;
+          if (!isNaN(duration) {
+            document.getElementById('durationDisplay').textContent = formatTime(duration);
+          }
         }
-      } catch (err) {
-        fallbackShare();
       }
-    });
-    
-    function fallbackShare() {
-      const shareUrl = window.location.href;
-      const tempInput = document.createElement('input');
-      tempInput.value = shareUrl;
-      document.body.appendChild(tempInput);
-      tempInput.select();
-      document.execCommand('copy');
-      document.body.removeChild(tempInput);
-      
-      alert('Link copied to clipboard:\n' + shareUrl);
-    }
 
-    // Keyboard shortcuts for skipping
-    document.addEventListener('keydown', function(e) {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      // Event listeners for duration
+      videoElement.addEventListener('loadedmetadata', updateDurationDisplay);
+      videoElement.addEventListener('durationchange', updateDurationDisplay);
       
-      const video = document.getElementById('player');
-      if (e.key === 'ArrowRight') {
-        video.currentTime += 10;
-      } else if (e.key === 'ArrowLeft') {
-        video.currentTime -= 10;
-      }
-    });
+      // Fallback in case events don't fire
+      const durationCheckInterval = setInterval(() => {
+        if (videoElement.readyState > 0) {
+          updateDurationDisplay();
+          clearInterval(durationCheckInterval);
+        }
+      }, 500);
 
-    // Periodically check duration in case metadata loads late
-    const durationCheckInterval = setInterval(() => {
-      if (videoElement.readyState > 0) {
-        updateDurationDisplay();
-        clearInterval(durationCheckInterval);
+      // Share button functionality
+      document.getElementById('shareBtn').addEventListener('click', async function(e) {
+        e.preventDefault();
+        const shareData = {
+          title: 'Premium Stream',
+          text: 'Watch: ' + document.querySelector('.full-filename').textContent,
+          url: window.location.href
+        };
+        
+        try {
+          if (navigator.share) {
+            await navigator.share(shareData);
+          } else {
+            // Fallback for browsers that don't support Web Share API
+            copyToClipboard(window.location.href);
+            alert('Link copied to clipboard!');
+          }
+        } catch (err) {
+          console.log('Error sharing:', err);
+          // Fallback if share is cancelled
+          copyToClipboard(window.location.href);
+          alert('Link copied to clipboard!');
+        }
+      });
+
+      // Helper function to copy text to clipboard
+      function copyToClipboard(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';  // Prevent scrolling to bottom
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+        } catch (err) {
+          console.error('Failed to copy text:', err);
+        }
+        document.body.removeChild(textarea);
       }
-    }, 500);
+
+      // Keyboard shortcuts for skipping
+      document.addEventListener('keydown', function(e) {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        
+        if (e.key === 'ArrowRight') {
+          videoElement.currentTime += 10;
+        } else if (e.key === 'ArrowLeft') {
+          videoElement.currentTime -= 10;
+        }
+      });
+    });
   </script>
 </body>
 
