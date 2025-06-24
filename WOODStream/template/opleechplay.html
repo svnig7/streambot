@@ -151,9 +151,9 @@
 <body>
   <!-- Navbar -->
   <nav class="navbar">
-    <div class="logo">
+    <a href="https://t.me/strm_7bot" target="_blank" class="logo">
       <i class="fas fa-play-circle mr-2"></i>Premium Stream
-    </div>
+    </a>
   </nav>
 
   <!-- Main Content -->
@@ -184,7 +184,7 @@
         <a href="{{file_url}}" download="{{file_name}}" class="download-btn">
           <i class="fas fa-download"></i> Download
         </a>
-        <button class="bg-indigo-600 text-white px-4 py-2 rounded-full">
+        <button id="shareBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-full">
           <i class="fas fa-share-alt mr-2"></i> Share
         </button>
       </div>
@@ -231,8 +231,12 @@
   <footer class="bg-slate-900 py-8 mt-12">
     <div class="container mx-auto px-4 text-center">
       <div class="flex justify-center gap-6 mb-6">
-        <a href="#" class="text-gray-400"><i class="fab fa-telegram fa-lg"></i></a>
-        <a href="#" class="text-gray-400"><i class="fab fa-github fa-lg"></i></a>
+        <a href="https://t.me/bots_7_bots" target="_blank" class="text-gray-400 hover:text-white">
+          <i class="fab fa-telegram fa-lg"></i>
+        </a>
+        <a href="https://github.com/svnig7" target="_blank" class="text-gray-400 hover:text-white">
+          <i class="fab fa-github fa-lg"></i>
+        </a>
       </div>
       <p class="text-gray-400 text-sm">
         © 2023 Premium Stream Bot. All rights reserved.
@@ -269,15 +273,33 @@
         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     });
     
-    // Prevent default behavior for all clicks
-    document.addEventListener('click', function(e) {
-      e.preventDefault();
-      // Allow only actual links to work
-      if (e.target.tagName === 'A' && e.target.getAttribute('href') !== '#') {
-        return true;
+    // Share button functionality
+    document.getElementById('shareBtn').addEventListener('click', function() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'Check out this video',
+          text: 'Watch {{file_name}} on Premium Stream',
+          url: window.location.href
+        }).catch(err => {
+          console.log('Error sharing:', err);
+          copyToClipboard(window.location.href);
+        });
+      } else {
+        copyToClipboard(window.location.href);
       }
-      return false;
-    }, true);
+    });
+    
+    // Fallback copy to clipboard function
+    function copyToClipboard(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      
+      alert('Link copied to clipboard: ' + text);
+    }
   </script>
 </body>
 
