@@ -85,12 +85,14 @@
     
     .download-btn {
       background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-      padding: 0.5rem 1.5rem;
+      padding: 0.75rem 2rem;
       border-radius: 50px;
       font-weight: 500;
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
+      margin: 1.5rem auto 0;
+      font-size: 1.1rem;
     }
     
     .features-grid {
@@ -121,6 +123,23 @@
     .full-filename {
       word-break: break-all;
       white-space: normal;
+    }
+
+    .file-details {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .file-detail-item {
+      display: flex;
+      align-items: center;
+    }
+
+    @media (min-width: 640px) {
+      .file-details {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     /* Custom player controls */
@@ -172,6 +191,11 @@
         padding: 0 5px;
         font-size: 12px;
       }
+      
+      .download-btn {
+        padding: 0.6rem 1.5rem;
+        font-size: 1rem;
+      }
     }
     
     /* Remove focus outlines */
@@ -206,30 +230,21 @@
     
     <!-- File Information -->
     <div class="file-info">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="flex flex-col">
-          <div class="flex items-center">
-            <h4>File Name:</h4>
-          </div>
+      <div class="file-details">
+        <div class="file-detail-item">
+          <h4>File Name:</h4>
           <p class="full-filename">{{file_name}}</p>
         </div>
-        <div class="flex items-center">
+        <div class="file-detail-item">
           <h4>File Size:</h4>
           <p>{{file_size}}</p>
         </div>
-        <div class="flex items-center">
-          <h4>Duration:</h4>
-          <p id="durationDisplay">--:--:--</p>
-        </div>
       </div>
       
-      <div class="mt-6 flex flex-wrap gap-4">
+      <div class="flex justify-center">
         <a href="{{file_url}}" download="{{file_name}}" class="download-btn">
-          <i class="fas fa-download"></i> Download
+          <i class="fas fa-download"></i> Download Now
         </a>
-        <button id="shareBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-full flex items-center">
-          <i class="fas fa-share-alt mr-2"></i> Share
-        </button>
       </div>
     </div>
     
@@ -310,86 +325,9 @@
         seekTime: 10
       });
 
-      // Get video element
-      const videoElement = document.getElementById('player');
-      
-      // Function to format time
-      function formatTime(seconds) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const secs = Math.floor(seconds % 60);
-        
-        return [
-          hours.toString().padStart(2, '0'),
-          minutes.toString().padStart(2, '0'),
-          secs.toString().padStart(2, '0')
-        ].join(':');
-      }
-
-      // Update duration display
-      function updateDurationDisplay() {
-        if (videoElement.readyState > 0) {
-          const duration = videoElement.duration;
-          if (!isNaN(duration) {
-            document.getElementById('durationDisplay').textContent = formatTime(duration);
-          }
-        }
-      }
-
-      // Event listeners for duration
-      videoElement.addEventListener('loadedmetadata', updateDurationDisplay);
-      videoElement.addEventListener('durationchange', updateDurationDisplay);
-      
-      // Fallback in case events don't fire
-      const durationCheckInterval = setInterval(() => {
-        if (videoElement.readyState > 0) {
-          updateDurationDisplay();
-          clearInterval(durationCheckInterval);
-        }
-      }, 500);
-
-      // Share button functionality
-      document.getElementById('shareBtn').addEventListener('click', async function(e) {
-        e.preventDefault();
-        const shareData = {
-          title: 'Premium Stream',
-          text: 'Watch: ' + document.querySelector('.full-filename').textContent,
-          url: window.location.href
-        };
-        
-        try {
-          if (navigator.share) {
-            await navigator.share(shareData);
-          } else {
-            // Fallback for browsers that don't support Web Share API
-            copyToClipboard(window.location.href);
-            alert('Link copied to clipboard!');
-          }
-        } catch (err) {
-          console.log('Error sharing:', err);
-          // Fallback if share is cancelled
-          copyToClipboard(window.location.href);
-          alert('Link copied to clipboard!');
-        }
-      });
-
-      // Helper function to copy text to clipboard
-      function copyToClipboard(text) {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';  // Prevent scrolling to bottom
-        document.body.appendChild(textarea);
-        textarea.select();
-        try {
-          document.execCommand('copy');
-        } catch (err) {
-          console.error('Failed to copy text:', err);
-        }
-        document.body.removeChild(textarea);
-      }
-
       // Keyboard shortcuts for skipping
       document.addEventListener('keydown', function(e) {
+        const videoElement = document.getElementById('player');
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
         
         if (e.key === 'ArrowRight') {
