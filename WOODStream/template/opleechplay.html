@@ -7,69 +7,321 @@
   <title>ғɪʟᴇ sᴛʀᴇᴀᴍ | {{file_name}}</title>
   <link rel="shortcut icon" href="https://raw.githubusercontent.com/svnig7/images/refs/heads/main/streambot.png" type="image/x-icon">
   <link rel="stylesheet" href="https://unpkg.com/sheryjs/dist/Shery.css" />
-  <link rel="stylesheet" href="https://my-hero-op.github.io/Resources/data/src/style.css">
-  <link rel="stylesheet" href="https://my-hero-op.github.io/Resources/data/src/plyr.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Josefin+Sans:wght@500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    nav {
-      background-color: black;
-      padding: 20px;
-      text-align: center;
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #f43f5e;
+      --dark: #1e293b;
+      --light: #f8fafc;
+      --gray: #94a3b8;
     }
-
-    #heading {
-      color: white;
-      font-size: 28px;
-      font-weight: bold;
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
     }
-
-    .file-name {
-      margin-top: 20px;
-      color: white;
-      text-align: left;
-      padding-left: 20px;
+    
+    body {
+      background-color: #0f172a;
+      color: var(--light);
+      min-height: 100vh;
+      overflow-x: hidden;
     }
-
-    .file-name h4 {
-      display: inline;
-      color: crimson;
+    
+    .glass-card {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
     }
-
-    .file-name p {
-      display: inline;
+    
+    .nav-gradient {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.9) 100%);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    .logo-text {
+      background: linear-gradient(90deg, #6366f1 0%, #f43f5e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+    }
+    
+    .player-container {
+      border-radius: 12px;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+    
+    .player-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(244, 63, 94, 0.3) 100%);
+      z-index: -1;
+      transform: translateZ(-1px);
+      border-radius: 12px;
+    }
+    
+    .info-card {
+      transition: all 0.3s ease;
+      border-left: 3px solid var(--primary);
+    }
+    
+    .info-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    
+    .download-btn {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+    }
+    
+    .floating {
+      animation: floating 6s ease-in-out infinite;
+    }
+    
+    @keyframes floating {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    .fade-in {
+      animation: fadeIn 1s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .text-gradient {
+      background: linear-gradient(90deg, #6366f1 0%, #f43f5e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+    }
+    
+    .shine-effect {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .shine-effect::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 200%;
+      height: 200%;
+      opacity: 0;
+      transform: rotate(30deg);
+      background: rgba(255, 255, 255, 0.13);
+      background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transition: all 0.5s ease;
+    }
+    
+    .shine-effect:hover::after {
+      opacity: 1;
+      left: 100%;
+    }
+    
+    .scroll-down {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--gray);
+      animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+      40% {transform: translateY(-20px);}
+      60% {transform: translateY(-10px);}
     }
   </style>
 </head>
 
-<body>
-  <nav class="bg-black py-5 flex justify-center items-center">
-  <a href="https://t.me/strm_7bot" target="_blank" class="text-white text-2xl font-bold" id="heading">
-    sᴛʀᴇᴀᴍ ʙᴏᴛ
-  </a>
-  </nav>
-
-  <div class="outer">
-    <div class="inner">
-      <div class="main" id="main">
-        <video id="player" class="player" src="{{file_url}}" type="video/mp4" playsinline controls width="100%"></video>
-
-        <div class="file-name">
-  <h4>ғɪʟᴇ ɴᴀᴍᴇ : </h4>
-  <p>{{file_name}}</p><br>
-  <h4>ғɪʟᴇ sɪᴢᴇ : </h4>
-  <p>{{file_size}}</p><br>
-  <h4>ᴅᴏᴡɴʟᴏᴀᴅ :</h4>
-  <a href="{{file_url}}" download="{{file_name}}" class="text-blue-400 hover:underline">
-    ᴄʟɪᴄᴋ ʜᴇʀᴇ
-  </a>
-        </div>
-      </div>
+<body class="relative overflow-x-hidden">
+  <!-- Animated Background -->
+  <div class="fixed inset-0 -z-10">
+    <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 opacity-90"></div>
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-indigo-500 filter blur-3xl opacity-20 animate-pulse"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full bg-rose-500 filter blur-3xl opacity-20 animate-pulse delay-300"></div>
     </div>
   </div>
+
+  <!-- Navigation -->
+  <nav class="nav-gradient py-4 px-6 flex justify-between items-center sticky top-0 z-50">
+    <div class="flex items-center space-x-2">
+      <img src="https://raw.githubusercontent.com/svnig7/images/refs/heads/main/streambot.png" alt="Logo" class="w-8 h-8 shine-effect">
+      <a href="https://t.me/strm_7bot" target="_blank" class="text-2xl font-bold logo-text shine-effect">
+        STREAM BOT PREMIUM
+      </a>
+    </div>
+    <div class="hidden md:flex items-center space-x-6">
+      <a href="#" class="text-gray-300 hover:text-white transition duration-300">Home</a>
+      <a href="#" class="text-gray-300 hover:text-white transition duration-300">Features</a>
+      <a href="#" class="text-gray-300 hover:text-white transition duration-300">About</a>
+      <a href="https://t.me/strm_7bot" target="_blank" class="px-4 py-2 bg-gradient-to-r from-indigo-500 to-rose-500 rounded-full text-white font-medium hover:shadow-lg transition duration-300 shine-effect">
+        Get Started
+      </a>
+    </div>
+    <button class="md:hidden text-gray-300">
+      <i class="fas fa-bars text-xl"></i>
+    </button>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-8 md:py-12 relative z-10">
+    <!-- Hero Section -->
+    <section class="text-center mb-12 fade-in">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4 text-gradient">Premium Streaming Experience</h1>
+      <p class="text-gray-400 max-w-2xl mx-auto text-lg">Enjoy high-quality streaming with no interruptions and premium features.</p>
+    </section>
+
+    <!-- Player Section -->
+    <section class="mb-12">
+      <div class="max-w-6xl mx-auto player-container shine-effect">
+        <video id="player" class="player w-full" src="{{file_url}}" type="video/mp4" playsinline controls poster="https://via.placeholder.com/1920x1080?text=Loading+Premium+Content"></video>
+      </div>
+    </section>
+
+    <!-- File Info Section -->
+    <section class="max-w-6xl mx-auto mb-12">
+      <div class="glass-card rounded-xl p-6 md:p-8 info-card">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-2xl font-bold mb-6 text-gradient">File Information</h3>
+            <div class="space-y-4">
+              <div class="flex items-start">
+                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center mr-4">
+                  <i class="fas fa-file-alt text-white"></i>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-gray-300">File Name</h4>
+                  <p class="text-white">{{file_name}}</p>
+                </div>
+              </div>
+              <div class="flex items-start">
+                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-rose-500 flex items-center justify-center mr-4">
+                  <i class="fas fa-weight-hanging text-white"></i>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-gray-300">File Size</h4>
+                  <p class="text-white">{{file_size}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col justify-between">
+            <div>
+              <h3 class="text-2xl font-bold mb-6 text-gradient">Quick Actions</h3>
+              <div class="space-y-4">
+                <a href="{{file_url}}" download="{{file_name}}" class="block w-full download-btn text-white font-medium py-3 px-6 rounded-lg text-center transition duration-300 shine-effect">
+                  <i class="fas fa-download mr-2"></i> Download File
+                </a>
+                <button class="w-full glass-card text-white font-medium py-3 px-6 rounded-lg transition duration-300 hover:bg-slate-700 shine-effect">
+                  <i class="fas fa-share-alt mr-2"></i> Share
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="max-w-6xl mx-auto mb-12">
+      <h3 class="text-2xl font-bold mb-8 text-center text-gradient">Premium Features</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass-card rounded-xl p-6 text-center hover:transform hover:-translate-y-2 transition duration-300">
+          <div class="h-16 w-16 mx-auto mb-4 rounded-full bg-indigo-500 flex items-center justify-center">
+            <i class="fas fa-bolt text-white text-2xl"></i>
+          </div>
+          <h4 class="font-bold text-lg mb-2">Instant Streaming</h4>
+          <p class="text-gray-400">No waiting time, start watching your files immediately.</p>
+        </div>
+        <div class="glass-card rounded-xl p-6 text-center hover:transform hover:-translate-y-2 transition duration-300">
+          <div class="h-16 w-16 mx-auto mb-4 rounded-full bg-rose-500 flex items-center justify-center">
+            <i class="fas fa-hd text-white text-2xl"></i>
+          </div>
+          <h4 class="font-bold text-lg mb-2">HD Quality</h4>
+          <p class="text-gray-400">Crystal clear playback with support for high resolutions.</p>
+        </div>
+        <div class="glass-card rounded-xl p-6 text-center hover:transform hover:-translate-y-2 transition duration-300">
+          <div class="h-16 w-16 mx-auto mb-4 rounded-full bg-purple-500 flex items-center justify-center">
+            <i class="fas fa-lock text-white text-2xl"></i>
+          </div>
+          <h4 class="font-bold text-lg mb-2">Secure</h4>
+          <p class="text-gray-400">Your files are protected with premium security measures.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900/50 py-8 border-t border-slate-800">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center space-x-2 mb-4 md:mb-0">
+          <img src="https://raw.githubusercontent.com/svnig7/images/refs/heads/main/streambot.png" alt="Logo" class="w-8 h-8">
+          <span class="text-xl font-bold text-gradient">STREAM BOT</span>
+        </div>
+        <div class="flex space-x-6">
+          <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+            <i class="fab fa-telegram text-xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+            <i class="fab fa-github text-xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+            <i class="fab fa-twitter text-xl"></i>
+          </a>
+        </div>
+      </div>
+      <div class="mt-6 pt-6 border-t border-slate-800 text-center text-gray-500 text-sm">
+        <p>© 2023 Stream Bot Premium. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scroll to Top Button -->
+  <button id="scrollToTop" class="fixed bottom-8 right-8 h-12 w-12 rounded-full bg-indigo-600 text-white shadow-lg hidden items-center justify-center transition duration-300 hover:bg-indigo-700">
+    <i class="fas fa-arrow-up"></i>
+  </button>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -77,7 +329,80 @@
   <script src="https://cdn.jsdelivr.net/gh/automat/controlkit.js@master/bin/controlKit.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sheryjs/dist/Shery.js"></script>
   <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
-  <script src="https://my-hero-op.github.io/Resources/data/src/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+  
+  <script>
+    // Initialize Plyr player
+    const player = new Plyr('#player', {
+      controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
+      keyboard: { focused: true, global: true },
+      tooltips: { controls: true, seek: true }
+    });
+    
+    // Scroll to top button
+    const scrollToTopBtn = document.getElementById('scrollToTop');
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) {
+        scrollToTopBtn.classList.remove('hidden');
+        scrollToTopBtn.classList.add('flex');
+      } else {
+        scrollToTopBtn.classList.add('hidden');
+        scrollToTopBtn.classList.remove('flex');
+      }
+    });
+    
+    scrollToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+    
+    // Initialize animations
+    document.addEventListener('DOMContentLoaded', () => {
+      // Animate elements on scroll
+      gsap.registerPlugin(ScrollTrigger);
+      
+      gsap.utils.toArray('.info-card, .glass-card').forEach(card => {
+        gsap.from(card, {
+          scrollTrigger: {
+            trigger: card,
+            start: "top 80%",
+            toggleActions: "play none none none"
+          },
+          opacity: 0,
+          y: 50,
+          duration: 0.8,
+          ease: "power2.out"
+        });
+      });
+      
+      // Shine effect implementation
+      const shineElements = document.querySelectorAll('.shine-effect');
+      shineElements.forEach(el => {
+        el.addEventListener('mousemove', (e) => {
+          const rect = el.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          el.style.setProperty('--mouse-x', `${x}px`);
+          el.style.setProperty('--mouse-y', `${y}px`);
+        });
+      });
+    });
+    
+    // Shery.js mouse effects
+    Shery.mouseFollower({
+      skew: true,
+      ease: "cubic-bezier(0.23, 1, 0.320, 1)",
+      duration: 0.5
+    });
+    
+    Shery.makeMagnet(".magnet-target", {
+      ease: "cubic-bezier(0.23, 1, 0.320, 1)",
+      duration: 0.5
+    });
+  </script>
 </body>
 
 </html>
