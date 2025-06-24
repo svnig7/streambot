@@ -61,6 +61,7 @@
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      position: relative;
     }
     
     .file-info {
@@ -128,23 +129,43 @@
     }
 
     .skip-buttons {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
       display: flex;
-      gap: 0.5rem;
-      margin-top: 1rem;
+      justify-content: space-between;
+      padding: 0 20px;
+      transform: translateY(-50%);
+      z-index: 10;
     }
 
     .skip-btn {
-      background: rgba(99, 102, 241, 0.2);
-      border: 1px solid var(--primary-color);
+      background: rgba(0, 0, 0, 0.5);
+      border: none;
       color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s;
+      opacity: 0;
+    }
+
+    .video-container:hover .skip-btn {
+      opacity: 1;
     }
 
     .skip-btn:hover {
-      background: rgba(99, 102, 241, 0.4);
+      background: rgba(99, 102, 241, 0.7);
+      transform: scale(1.1);
+    }
+
+    .plyr__controls {
+      z-index: 20;
     }
     
     @media (max-width: 768px) {
@@ -159,6 +180,11 @@
       .video-container, .file-info {
         margin: 1rem;
         border-radius: 8px;
+      }
+
+      .skip-btn {
+        width: 40px;
+        height: 40px;
       }
     }
     
@@ -190,14 +216,27 @@
     <!-- Video Player Section -->
     <div class="video-container">
       <video id="player" class="player" src="{{file_url}}" type="video/mp4" playsinline controls width="100%"></video>
+      
+      <!-- Skip Buttons Overlay -->
+      <div class="skip-buttons">
+        <button id="back10s" class="skip-btn" title="Back 10 seconds">
+          <i class="fas fa-backward fa-lg"></i>
+        </button>
+        <button id="forward10s" class="skip-btn" title="Forward 10 seconds">
+          <i class="fas fa-forward fa-lg"></i>
+        </button>
+      </div>
     </div>
     
     <!-- File Information -->
     <div class="file-info">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="flex items-center">
-          <h4>File Name:</h4>
-          <p class="truncate">{{file_name}}</p>
+        <div class="flex items-start flex-col">
+          <div class="flex items-center">
+            <h4>File Name:</h4>
+            <p class="truncate">{{file_name}}</p>
+          </div>
+          <div class="full-filename">{{file_name}}</div>
         </div>
         <div class="flex items-center">
           <h4>File Size:</h4>
@@ -207,22 +246,6 @@
           <h4>Duration:</h4>
           <p>--:--:--</p>
         </div>
-      </div>
-
-      <!-- Full File Name Display -->
-      <div class="mt-2">
-        <h4>Full Name:</h4>
-        <p class="full-filename">{{file_name}}</p>
-      </div>
-
-      <!-- Skip Buttons -->
-      <div class="skip-buttons">
-        <button id="back10s" class="skip-btn">
-          <i class="fas fa-backward mr-1"></i>10s
-        </button>
-        <button id="forward10s" class="skip-btn">
-          10s<i class="fas fa-forward ml-1"></i>
-        </button>
       </div>
       
       <div class="mt-6 flex flex-wrap gap-4">
