@@ -61,7 +61,6 @@
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      position: relative;
     }
     
     .file-info {
@@ -122,50 +121,37 @@
     .full-filename {
       word-break: break-all;
       white-space: normal;
-      margin-top: 0.5rem;
-      padding: 0.5rem;
-      background: rgba(15, 23, 42, 0.5);
-      border-radius: 5px;
     }
 
-    .skip-buttons {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
+    /* Custom player controls */
+    .plyr__controls {
       display: flex;
-      justify-content: space-between;
-      padding: 0 20px;
-      transform: translateY(-50%);
-      z-index: 10;
+      flex-wrap: wrap;
     }
 
-    .skip-btn {
-      background: rgba(0, 0, 0, 0.5);
+    .plyr__controls__item.plyr__time {
+      margin-left: auto;
+    }
+
+    .plyr__skip {
+      background: none;
       border: none;
-      color: white;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
+      color: inherit;
+      padding: 0 10px;
+      font-size: 14px;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      opacity: 0;
     }
 
-    .video-container:hover .skip-btn {
-      opacity: 1;
+    .plyr__skip svg {
+      width: 14px;
+      height: 14px;
+      margin: 0 5px;
     }
 
-    .skip-btn:hover {
-      background: rgba(99, 102, 241, 0.7);
-      transform: scale(1.1);
-    }
-
-    .plyr__controls {
-      z-index: 20;
+    .plyr__skip--10 {
+      margin-right: 5px;
     }
     
     @media (max-width: 768px) {
@@ -182,9 +168,9 @@
         border-radius: 8px;
       }
 
-      .skip-btn {
-        width: 40px;
-        height: 40px;
+      .plyr__skip {
+        padding: 0 5px;
+        font-size: 12px;
       }
     }
     
@@ -216,27 +202,16 @@
     <!-- Video Player Section -->
     <div class="video-container">
       <video id="player" class="player" src="{{file_url}}" type="video/mp4" playsinline controls width="100%"></video>
-      
-      <!-- Skip Buttons Overlay -->
-      <div class="skip-buttons">
-        <button id="back10s" class="skip-btn" title="Back 10 seconds">
-          <i class="fas fa-backward fa-lg"></i>
-        </button>
-        <button id="forward10s" class="skip-btn" title="Forward 10 seconds">
-          <i class="fas fa-forward fa-lg"></i>
-        </button>
-      </div>
     </div>
     
     <!-- File Information -->
     <div class="file-info">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="flex items-start flex-col">
+        <div class="flex flex-col">
           <div class="flex items-center">
             <h4>File Name:</h4>
-            <p class="truncate">{{file_name}}</p>
           </div>
-          <div class="full-filename">{{file_name}}</div>
+          <p class="full-filename">{{file_name}}</p>
         </div>
         <div class="flex items-center">
           <h4>File Size:</h4>
@@ -316,20 +291,35 @@
   <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
   
   <script>
-    // Initialize Plyr video player with simplified controls
+    // Initialize Plyr video player with custom controls
     const player = new Plyr('#player', {
       controls: [
         'play-large',
+        'rewind',
         'play',
+        'fast-forward',
         'progress',
         'current-time',
+        'duration',
         'mute',
         'volume',
+        'settings',
         'fullscreen'
       ],
-      keyboard: { focused: true, global: true }
+      keyboard: { focused: true, global: true },
+      tooltips: { controls: true, seek: true },
+      seekTime: 10
     });
-    
+
+    // Customize the rewind/fast-forward buttons
+    player.elements.controls.querySelector('.plyr__control--rewind').innerHTML = 
+      '<button type="button" class="plyr__control" data-plyr="rewind" aria-label="Rewind 10s">' +
+      '<i class="fas fa-backward"></i><span>10s</span></button>';
+
+    player.elements.controls.querySelector('.plyr__control--fast-forward').innerHTML = 
+      '<button type="button" class="plyr__control" data-plyr="fast-forward" aria-label="Forward 10s">' +
+      '<span>10s</span><i class="fas fa-forward"></i></button>';
+
     // Get video duration after metadata loads
     document.getElementById('player').addEventListener('loadedmetadata', function() {
       const duration = this.duration;
@@ -368,17 +358,6 @@
       
       alert('Link copied to clipboard: ' + text);
     }
-
-    // Skip forward/backward functionality
-    document.getElementById('forward10s').addEventListener('click', function() {
-      const video = document.getElementById('player');
-      video.currentTime += 10;
-    });
-
-    document.getElementById('back10s').addEventListener('click', function() {
-      const video = document.getElementById('player');
-      video.currentTime -= 10;
-    });
 
     // Keyboard shortcuts for skipping
     document.addEventListener('keydown', function(e) {
