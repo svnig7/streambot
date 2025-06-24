@@ -8,6 +8,7 @@
   <link rel="shortcut icon" href="https://raw.githubusercontent.com/svnig7/images/refs/heads/main/streambot.png" type="image/x-icon">
   
   <!-- CSS Libraries -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
   
@@ -116,19 +117,34 @@
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    
-    .file-name-full {
+
+    .full-filename {
       word-break: break-all;
       white-space: normal;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 5px;
     }
-    
-    .plyr__control--overlaid {
-      background: rgba(99, 102, 241, 0.8);
+
+    .skip-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
     }
-    
-    .plyr--video .plyr__control:hover,
-    .plyr--video .plyr__control[aria-expanded="true"] {
-      background: var(--primary-color);
+
+    .skip-btn {
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid var(--primary-color);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .skip-btn:hover {
+      background: rgba(99, 102, 241, 0.4);
     }
     
     @media (max-width: 768px) {
@@ -150,6 +166,14 @@
     *:focus {
       outline: none;
     }
+    
+    /* Remove text selection highlighting */
+    * {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
   </style>
 </head>
 
@@ -165,20 +189,15 @@
   <div class="container mx-auto px-4">
     <!-- Video Player Section -->
     <div class="video-container">
-      <video id="player" playsinline controls>
-        <source src="{{file_url}}" type="video/mp4" />
-        Your browser doesn't support HTML5 video.
-      </video>
+      <video id="player" class="player" src="{{file_url}}" type="video/mp4" playsinline controls width="100%"></video>
     </div>
     
     <!-- File Information -->
     <div class="file-info">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="flex items-start flex-col">
-          <div class="flex">
-            <h4>File Name:</h4>
-            <p class="file-name-full">{{file_name}}</p>
-          </div>
+        <div class="flex items-center">
+          <h4>File Name:</h4>
+          <p class="truncate">{{file_name}}</p>
         </div>
         <div class="flex items-center">
           <h4>File Size:</h4>
@@ -186,8 +205,24 @@
         </div>
         <div class="flex items-center">
           <h4>Duration:</h4>
-          <p id="durationDisplay">--:--:--</p>
+          <p>--:--:--</p>
         </div>
+      </div>
+
+      <!-- Full File Name Display -->
+      <div class="mt-2">
+        <h4>Full Name:</h4>
+        <p class="full-filename">{{file_name}}</p>
+      </div>
+
+      <!-- Skip Buttons -->
+      <div class="skip-buttons">
+        <button id="back10s" class="skip-btn">
+          <i class="fas fa-backward mr-1"></i>10s
+        </button>
+        <button id="forward10s" class="skip-btn">
+          10s<i class="fas fa-forward ml-1"></i>
+        </button>
       </div>
       
       <div class="mt-6 flex flex-wrap gap-4">
@@ -258,106 +293,77 @@
   <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
   
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Initialize Plyr player with enhanced controls
-      const player = new Plyr('#player', {
-        controls: [
-          'play-large',
-          'rewind',
-          'play',
-          'fast-forward',
-          'progress',
-          'current-time',
-          'duration',
-          'mute',
-          'volume',
-          'pip',
-          'airplay',
-          'fullscreen'
-        ],
-        keyboard: { 
-          focused: true, 
-          global: true,
-          seek: 10 // Seek 10 seconds when using arrow keys
-        },
-        tooltips: {
-          controls: true,
-          seek: true
-        },
-        seekTime: 10, // Seek 10 seconds when clicking progress bar
-        i18n: {
-          rewind: 'Rewind 10s',
-          fastForward: 'Forward 10s'
-        }
-      });
-
-      // Custom rewind button functionality
-      player.elements.controls.querySelector('.plyr__control--rewind').addEventListener('click', (e) => {
-        e.preventDefault();
-        player.rewind(10);
-      });
-
-      // Custom fast forward button functionality
-      player.elements.controls.querySelector('.plyr__control--fast-forward').addEventListener('click', (e) => {
-        e.preventDefault();
-        player.forward(10);
-      });
-
-      // Update duration display when metadata is loaded
-      player.on('loadedmetadata', () => {
-        const duration = player.duration;
-        updateDurationDisplay(duration);
-      });
-
-      // Also try to get duration on ready event as fallback
-      player.on('ready', () => {
-        if (player.duration) {
-          updateDurationDisplay(player.duration);
-        } else {
-          // If duration isn't available yet, check again after a short delay
-          setTimeout(() => {
-            if (player.duration) {
-              updateDurationDisplay(player.duration);
-            }
-          }, 1000);
-        }
-      });
-
-      function updateDurationDisplay(duration) {
-        const hours = Math.floor(duration / 3600);
-        const minutes = Math.floor((duration % 3600) / 60);
-        const seconds = Math.floor(duration % 60);
-        
-        document.getElementById('durationDisplay').textContent = 
-          `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-      }
-
-      // Share button functionality
-      document.getElementById('shareBtn').addEventListener('click', function() {
-        if (navigator.share) {
-          navigator.share({
-            title: 'Check out this video',
-            text: 'Watch {{file_name}} on Premium Stream',
-            url: window.location.href
-          }).catch(err => {
-            console.log('Error sharing:', err);
-            copyToClipboard(window.location.href);
-          });
-        } else {
+    // Initialize Plyr video player with simplified controls
+    const player = new Plyr('#player', {
+      controls: [
+        'play-large',
+        'play',
+        'progress',
+        'current-time',
+        'mute',
+        'volume',
+        'fullscreen'
+      ],
+      keyboard: { focused: true, global: true }
+    });
+    
+    // Get video duration after metadata loads
+    document.getElementById('player').addEventListener('loadedmetadata', function() {
+      const duration = this.duration;
+      const hours = Math.floor(duration / 3600);
+      const minutes = Math.floor((duration % 3600) / 60);
+      const seconds = Math.floor(duration % 60);
+      
+      document.querySelector('.file-info div:nth-child(3) p').textContent = 
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    });
+    
+    // Share button functionality
+    document.getElementById('shareBtn').addEventListener('click', function() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'Check out this video',
+          text: 'Watch {{file_name}} on Premium Stream',
+          url: window.location.href
+        }).catch(err => {
+          console.log('Error sharing:', err);
           copyToClipboard(window.location.href);
-        }
-      });
+        });
+      } else {
+        copyToClipboard(window.location.href);
+      }
+    });
+    
+    // Fallback copy to clipboard function
+    function copyToClipboard(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      
+      alert('Link copied to clipboard: ' + text);
+    }
 
-      // Fallback copy to clipboard function
-      function copyToClipboard(text) {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        
-        alert('Link copied to clipboard: ' + text);
+    // Skip forward/backward functionality
+    document.getElementById('forward10s').addEventListener('click', function() {
+      const video = document.getElementById('player');
+      video.currentTime += 10;
+    });
+
+    document.getElementById('back10s').addEventListener('click', function() {
+      const video = document.getElementById('player');
+      video.currentTime -= 10;
+    });
+
+    // Keyboard shortcuts for skipping
+    document.addEventListener('keydown', function(e) {
+      const video = document.getElementById('player');
+      if (e.key === 'ArrowRight') {
+        video.currentTime += 10;
+      } else if (e.key === 'ArrowLeft') {
+        video.currentTime -= 10;
       }
     });
   </script>
