@@ -118,6 +118,11 @@
       -webkit-text-fill-color: transparent;
     }
     
+    .filename-full {
+      word-break: break-all;
+      white-space: normal;
+    }
+    
     @media (max-width: 768px) {
       .navbar {
         padding: 1rem;
@@ -160,15 +165,31 @@
   <div class="container mx-auto px-4">
     <!-- Video Player Section -->
     <div class="video-container">
-      <video id="player" class="player" src="{{file_url}}" type="video/mp4" playsinline controls width="100%"></video>
+      <video id="player" class="player" playsinline controls width="100%">
+        <source src="{{file_url}}" type="video/mp4">
+        
+        <!-- Multiple audio tracks -->
+        <audio id="english-audio" kind="alternative" srclang="en" label="English" src="{{file_url}}#t=0" default></audio>
+        <audio id="hindi-audio" kind="alternative" srclang="hi" label="Hindi" src="{{file_url}}#t=0"></audio>
+        
+        <!-- Multiple subtitle tracks -->
+        <track kind="subtitles" srclang="en" label="English" src="subtitles_en.vtt" default>
+        <track kind="subtitles" srclang="hi" label="Hindi" src="subtitles_hi.vtt">
+        <track kind="subtitles" srclang="es" label="Spanish" src="subtitles_es.vtt">
+      </video>
     </div>
     
     <!-- File Information -->
     <div class="file-info">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="flex items-center">
-          <h4>File Name:</h4>
-          <p class="truncate">{{file_name}}</p>
+        <div class="flex flex-col">
+          <div class="flex items-center">
+            <h4>File Name:</h4>
+            <p class="truncate">{{file_name}}</p>
+          </div>
+          <div class="mt-2">
+            <p class="filename-full text-sm text-gray-300">{{file_name_full}}</p>
+          </div>
         </div>
         <div class="flex items-center">
           <h4>File Size:</h4>
@@ -248,7 +269,7 @@
   <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
   
   <script>
-    // Initialize Plyr video player with simplified controls
+    // Initialize Plyr video player with full controls
     const player = new Plyr('#player', {
       controls: [
         'play-large',
@@ -257,9 +278,15 @@
         'current-time',
         'mute',
         'volume',
+        'captions',
+        'settings',
+        'pip',
+        'airplay',
         'fullscreen'
       ],
-      keyboard: { focused: true, global: true }
+      settings: ['captions', 'quality', 'speed', 'loop'],
+      keyboard: { focused: true, global: true },
+      captions: { active: true, language: 'auto', update: true }
     });
     
     // Get video duration after metadata loads
@@ -300,6 +327,23 @@
       
       alert('Link copied to clipboard: ' + text);
     }
+    
+    // Enable multiple audio tracks
+    player.on('ready', event => {
+      const instance = event.detail.plyr;
+      
+      // Add audio tracks to the settings menu
+      if (instance) {
+        const audioTracks = [
+          { id: 'english-audio', label: 'English', language: 'en' },
+          { id: 'hindi-audio', label: 'Hindi', language: 'hi' }
+        ];
+        
+        audioTracks.forEach(track => {
+          instance.addAudioTrack(track);
+        });
+      }
+    });
   </script>
 </body>
 
