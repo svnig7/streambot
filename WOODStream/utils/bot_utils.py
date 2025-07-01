@@ -11,62 +11,63 @@ from typing import (
     Union
 )
 
-
 db = Database(Telegram.DATABASE_URL, Telegram.SESSION_NAME)
 
 async def is_user_joined(bot, message: Message):
-    if Telegram.FORCE_SUB_ID and Telegram.FORCE_SUB_ID.startswith("-100"):
-        channel_chat_id = int(Telegram.FORCE_SUB_ID)
-    elif Telegram.FORCE_SUB_ID:
-        channel_chat_id = Telegram.FORCE_SUB_ID
-    else:
-        return 200
+    required_chats = []
 
-    try:
-        user = await bot.get_chat_member(chat_id=channel_chat_id, user_id=message.from_user.id)
-        if user.status == "BANNED":
+    if Telegram.FORCE_SUB_ID:
+        required_chats.append(("channel", Telegram.FORCE_SUB_ID, Telegram.FORCE_SUB_LINK))
+    if hasattr(Telegram, 'FORCE_SUB_GROUP_ID') and Telegram.FORCE_SUB_GROUP_ID:
+        required_chats.append(("group", Telegram.FORCE_SUB_GROUP_ID, Telegram.FORCE_SUB_GROUP_LINK))
+
+    for chat_type, chat_id, invite_link in required_chats:
+        if chat_id.startswith("-100"):
+            chat_id = int(chat_id)
+
+        try:
+            member = await bot.get_chat_member(chat_id, message.from_user.id)
+            if member.status == "BANNED":
+                await message.reply_text(
+                    text=LANG.BAN_TEXT.format(Telegram.OWNER_ID),
+                    parse_mode=ParseMode.MARKDOWN,
+                    disable_web_page_preview=True
+                )
+                return False
+        except UserNotParticipant:
+            buttons = []
+            if Telegram.FORCE_SUB_ID:
+                buttons.append(InlineKeyboardButton("📢 ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ", url=Telegram.FORCE_SUB_LINK))
+            if Telegram.FORCE_SUB_GROUP_ID:
+                buttons.append(InlineKeyboardButton("👥 ᴊᴏɪɴ ɢʀᴏᴜᴘ", url=Telegram.FORCE_SUB_GROUP_LINK))
+
+            # Add Refresh button in new row
+            buttons_markup = [buttons, [InlineKeyboardButton("✅ ʀᴇғʀᴇsʜ", callback_data="refresh_join")]]
+
+            if Telegram.VERIFY_PIC:
+                ver = await message.reply_photo(
+                    photo=Telegram.VERIFY_PIC,
+                    caption="ᴘʟᴇᴀsᴇ ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ ᴀɴᴅ ɢʀᴏᴜᴘ ᴛᴏ ᴜsᴇ ᴍᴇ 🔐",
+                    parse_mode=ParseMode.HTML,
+                    reply_markup=InlineKeyboardMarkup(buttons_markup)
+                )
+            else:
+                ver = await message.reply_text(
+                    text="<i>ᴘʟᴇᴀsᴇ ᴊᴏɪɴ ʙᴏᴛʜ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ 🔐</i>",
+                    parse_mode=ParseMode.HTML,
+                    reply_markup=InlineKeyboardMarkup(buttons_markup)
+                )
+            return False
+        except Exception:
             await message.reply_text(
-                text=LANG.BAN_TEXT.format(Telegram.OWNER_ID),
-                parse_mode=ParseMode.MARKDOWN,
+                text=f"⚠️ ᴇʀʀᴏʀ. ᴄᴏɴᴛᴀᴄᴛ <a href='https://t.me/cntct_7bot'>ᴅᴇᴠᴇʟᴏᴘᴇʀ</a>",
+                parse_mode=ParseMode.HTML,
                 disable_web_page_preview=True
             )
             return False
-    except UserNotParticipant:
-        invite_link = Telegram.FORCE_SUB_LINK
-        if Telegram.VERIFY_PIC:
-            ver = await message.reply_photo(
-                photo=Telegram.VERIFY_PIC,
-                caption="ᴊᴏɪɴ ᴍʏ ᴜᴘᴅᴀᴛᴇ ᴄʜᴀɴɴᴇʟ ᴛᴏ ᴜsᴇ ᴍᴇ 🔐",
-                parse_mode=ParseMode.HTML,
-                reply_markup=InlineKeyboardMarkup(
-                    [[InlineKeyboardButton("❆ ᴊᴏɪɴ ᴏᴜʀ ᴄʜᴀɴɴᴇʟ ❆", url=invite_link)]]
-                )
-            )
-        else:
-            ver = await message.reply_text(
-                text="<i>Jᴏɪɴ ᴍʏ ᴜᴘᴅᴀᴛᴇ ᴄʜᴀɴɴᴇʟ ᴛᴏ ᴜsᴇ ᴍᴇ 🔐</i>",
-                reply_markup=InlineKeyboardMarkup(
-                    [[InlineKeyboardButton("❆ ᴊᴏɪɴ ᴏᴜʀ ᴄʜᴀɴɴᴇʟ ❆", url=invite_link)]]
-                ),
-                parse_mode=ParseMode.HTML
-            )
-        await asyncio.sleep(30)
-        try:
-            await ver.delete()
-            await message.delete()
-        except Exception:
-            pass
-        return False
-    except Exception:
-        await message.reply_text(
-            text=f"sᴏᴍᴇᴛʜɪɴɢ ᴡʀᴏɴɢ, ᴄᴏɴᴛᴀᴄᴛ ᴍʏ ᴅᴇᴠᴇʟᴏᴘᴇʀ <b><a href='https://t.me/cntct_7bot'>[ ᴄʟɪᴄᴋ ʜᴇʀᴇ ]</a></b>",
-            parse_mode=ParseMode.HTML,
-            disable_web_page_preview=True
-        )
-        return False
 
     return True
-
+    
 #---------------------[ PRIVATE GEN LINK + CALLBACK ]---------------------#
 
 async def gen_link(_id):
