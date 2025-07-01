@@ -53,7 +53,7 @@ async def is_user_joined(bot, message: Message):
                 )
             else:
                 ver = await message.reply_text(
-                    text="<i>ᴘʟᴇᴀsᴇ ᴊᴏɪɴ ʙᴏᴛʜ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ 🔐</i>",
+                    text="<b>ᴘʟᴇᴀsᴇ ᴊᴏɪɴ ʙᴏᴛʜ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ 🔐</b>",
                     parse_mode=ParseMode.HTML,
                     reply_markup=InlineKeyboardMarkup(buttons_markup)
                 )
