@@ -13,7 +13,9 @@ class Telegram:
     UPDATES_CHANNEL = str(env.get('UPDATES_CHANNEL', "bots_7_bots"))
     SESSION_NAME = str(env.get('SESSION_NAME', 'streambot'))
     FORCE_SUB_ID = env.get('FORCE_SUB_ID', None)
-    FORCE_SUB_LINK = str(env.get('FORCE_SUB_LINK'))
+    FORCE_SUB_LINK = str(env.get('FORCE_SUB_LINK', 'https://t.me/bots_7_bots'))
+    FORCE_SUB_GROUP_ID = env.get('FORCE_SUB_GROUP_ID', None)
+    FORCE_SUB_GROUP_LINK = str(env.get('FORCE_SUB_GROUP_LINK', 'https://t.me/rqstgrp7'))
     FORCE_SUB = env.get('FORCE_UPDATES_CHANNEL', True)
     FORCE_SUB = True if str(FORCE_SUB).lower() == "true" else False
     SLEEP_THRESHOLD = int(env.get("SLEEP_THRESHOLD", "60"))
