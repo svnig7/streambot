@@ -23,12 +23,14 @@ async def cb_data(bot, update: CallbackQuery):
             disable_web_page_preview=True,
             reply_markup=BUTTON.START_BUTTONS
         )
+        
     elif usr_cmd[0] == "help":
         await update.message.edit_text(
             text=LANG.HELP_TEXT.format(Telegram.OWNER_ID),
             disable_web_page_preview=True,
             reply_markup=BUTTON.HELP_BUTTONS
         )
+        
     elif usr_cmd[0] == "about":
         await update.message.edit_text(
             text=LANG.ABOUT_TEXT.format(WOODStream.fname, __version__),
@@ -40,21 +42,26 @@ async def cb_data(bot, update: CallbackQuery):
 
     elif usr_cmd[0] == "N/A":
         await update.answer("N/A", True)
+        
     elif usr_cmd[0] == "close":
         await update.message.delete()
+        
     elif usr_cmd[0] == "msgdelete":
         await update.message.edit_caption(
         caption= "**ᴄᴏɴғɪʀᴍ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜᴇ ғɪʟᴇ**\n\n",
         reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ʏᴇs", callback_data=f"msgdelyes_{usr_cmd[1]}_{usr_cmd[2]}"), InlineKeyboardButton("ɴᴏ", callback_data=f"myfile_{usr_cmd[1]}_{usr_cmd[2]}")]])
     )
+        
     elif usr_cmd[0] == "msgdelyes":
         await delete_user_file(usr_cmd[1], int(usr_cmd[2]), update)
         return
+        
     elif usr_cmd[0] == "msgdelpvt":
         await update.message.edit_caption(
         caption= "**ᴄᴏɴғɪʀᴍ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜᴇ ғɪʟᴇ**\n\n",
         reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ʏᴇs", callback_data=f"msgdelpvtyes_{usr_cmd[1]}"), InlineKeyboardButton("ɴᴏ", callback_data=f"mainstream_{usr_cmd[1]}")]])
     )
+        
     elif usr_cmd[0] == "msgdelpvtyes":
         await delete_user_filex(usr_cmd[1], update)
         return
@@ -75,23 +82,37 @@ async def cb_data(bot, update: CallbackQuery):
             caption="Total files: {}".format(total_files),
             reply_markup=InlineKeyboardMarkup(file_list)
             )
+        
     elif usr_cmd[0] == "myfile":
         await gen_file_menu(usr_cmd[1], usr_cmd[2], update)
         return
+        
     elif usr_cmd[0] == "sendfile":
         myfile = await db.get_file(usr_cmd[1])
         file_name = myfile['file_name']
         await update.answer(f"sᴇɴᴅɪɴɢ ғɪʟᴇ {file_name}")
         await update.message.reply_cached_media(myfile['file_id'], caption=f'**{file_name}**')
-    else:
-        await update.message.delete()
+
+    elif usr_cmd[0] == "refresh" and usr_cmd[1] == "join":
+        # Simulate a Message object from the callback message
+        fake_msg = update.message
+        fake_msg.from_user = update.from_user
+
+        # Recheck force subscription
+        from WOODStream.utils.bot_utils import is_user_joined
+        if await is_user_joined(bot, fake_msg):
+            await update.message.edit_text(
+                text="✅ ʏᴏᴜ ʜᴀᴠᴇ ᴊᴏɪɴᴇᴅ ʀᴇǫᴜɪʀᴇᴅ ᴄʜᴀɴɴᴇʟ & ɢʀᴏᴜᴘ.\n\nᴘʟᴇᴀsᴇ ʀᴜɴ /start ᴀɢᴀɪɴ.",
+                parse_mode=ParseMode.MARKDOWN
+            )
+        else:
+            await update.answer("❗ sᴛɪʟʟ ɴᴏᴛ ᴊᴏɪɴᴇᴅ", show_alert=True)
 
 
 
     #---------------------[ MY FILES FUNC ]---------------------#
 
 async def gen_file_list_button(file_list_no: int, user_id: int):
-
     file_range=[file_list_no*10-10+1, file_list_no*10]
     user_files, total_files=await db.find_files(user_id, file_range)
 
@@ -104,6 +125,7 @@ async def gen_file_list_button(file_list_no: int, user_id: int):
                  InlineKeyboardButton(f"{file_list_no}/{math.ceil(total_files/10)}", callback_data="N/A"),
                  InlineKeyboardButton("►", callback_data="{}".format("userfiles_"+str(file_list_no+1) if total_files > file_list_no*10 else 'N/A'))]
         )
+        
     if not file_list:
         file_list.append(
                 [InlineKeyboardButton("ᴇᴍᴘᴛʏ", callback_data="N/A")])
@@ -167,7 +189,6 @@ async def gen_file_menu(_id, file_list_no, update: CallbackQuery):
 
 
 async def delete_user_file(_id, file_list_no: int, update:CallbackQuery):
-
     try:
         myfile_info=await db.get_file(_id)
     except FIleNotFound:
@@ -182,7 +203,6 @@ async def delete_user_file(_id, file_list_no: int, update:CallbackQuery):
         )
 
 async def delete_user_filex(_id, update:CallbackQuery):
-
     try:
         myfile_info=await db.get_file(_id)
     except FIleNotFound:
