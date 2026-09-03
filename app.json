@@ -75,6 +75,22 @@
       "description": "To set Image at Force Subscribe Verify. Defaults to pre-set image.",
       "required" : false
     },
+    "MAX_PLAYLIST_ITEMS" : {
+      "description": "Max files bundled into one playlist when you send an album (merged in from telestream-bot). Defaults to 50.",
+      "required" : false
+    },
+    "CLEANUP_INTERVAL" : {
+      "description": "Seconds between sweeps that delete expired TTL links/playlists (merged in from telestream-bot). Defaults to 600.",
+      "required" : false
+    },
+    "ENABLE_SUBTITLES" : {
+      "description": "Enable in-browser subtitle extraction in the enhanced player. Needs ffmpeg on the server (merged in from telestream-bot). Defaults to true.",
+      "required" : false
+    },
+    "ENABLE_TRACK_PROBE" : {
+      "description": "Enable audio/subtitle track listing in the enhanced player. Needs ffprobe on the server (merged in from telestream-bot). Defaults to true.",
+      "required" : false
+    }
   },
   "buildpacks" : [
     {

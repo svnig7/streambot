@@ -10,6 +10,13 @@
   This bot provides stream links for Telegram files without the necessity of waiting for the download to complete, offering the ability to store files.
 </p>
 
+> **Merged bot:** this is streambot with telestream-bot's playlists, TTL
+> (self-expiring) links, custom cover art, and enhanced multi-audio/subtitle
+> web player merged in. See [MERGE_NOTES.md](./MERGE_NOTES.md) for exactly
+> what changed, new env vars, and new commands (`/ttl`, `/poster`, send an
+> album for a playlist link).
+
+
 ### ♢ How to Deploy :
 
 <i>Either you could locally host, VPS, or deploy on [Heroku](https://heroku.com)</i>
