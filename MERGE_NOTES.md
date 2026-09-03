@@ -156,3 +156,54 @@ running an existing streambot deployment as-is.
   `:root` variable swap (cyan `#00fff2` / magenta `#ff2bd6` on near-black)
   plus a handful of appended glow rules (`box-shadow`/`text-shadow`) on
   cards, buttons, and the topbar - no structural HTML/JS was touched.
+
+## Round 3: removed opleechplay.html, exact cover/caption on resend
+
+- **`template/opleechplay.html` removed.** (Supersedes the Round 1/2 notes
+  above that still mention it.) `/watch/{id}` now checks the file's mime
+  type first: video/audio redirects (302) straight to `/xstrm/{id}`, the
+  enhanced player; everything else still renders `dl.html` as before. Old
+  `/watch/{id}` links for video keep working, they just land one hop later
+  on the better page instead of the old one.
+- **Exact cover/thumbnail + caption on every resend** (`GET FILE` via deep
+  link, `GET FILE` in the My Files menu, and the internal `FLOG_CHANNEL`
+  copy used for multi-client streaming) - not just the file, matching what
+  was originally uploaded:
+  - `get_file_info()` (`WOODStream/utils/file_properties.py`) now also
+    captures `cover_file_id` (the file's own `thumbs[-1].file_id` at
+    upload time - e.g. a movie poster attached to the video) and `kind`
+    (`video`/`audio`/`animation`/etc., from `message.media.value`).
+  - New `resend_media()` helper in the same file is now the single place
+    all three resend paths go through. It tries `send_video(cover=...)`
+    first (Bot API's dedicated video-cover parameter), falls back to
+    `send_video(thumb=...)`, and falls back again to plain
+    `send_cached_media()` if neither works - the same
+    try/fallback shape as the reference `video-cover-bot.py` snippet you
+    shared, since not every Pyrogram build has `cover=` yet. Audio and
+    animation get the equivalent `send_audio`/`send_animation` treatment.
+  - The caption on every resend is the original upload's caption
+    (`caption_html`, same field the link-card reuses) rather than a
+    generic bold filename - so `Get File` output now matches the original
+    message you sent (poster + caption + filename), not a stripped-down
+    Telegram auto-thumbnail.
+
+## Round 4: branded title/footer link, plain-text log captions
+
+- **"Stream Bot" title + Telegram footer icon** on all three web pages
+  (`/xstrm`, `/playlist`, `/dl`), linking to the bot itself
+  (`https://t.me/<bot username>`):
+  - `dl.html` (Jinja-rendered): `render_page()` now passes a `bot_link`
+    context var, used by both the new top brand row and the footer icon.
+  - `watch.html`/`playlist.html` (served as static files): these use a
+    `__BOT_LINK__` placeholder swapped in at request time by a new
+    `_serve_with_bot_link()` helper in `stream_routes.py` (file content is
+    cached in memory after the first read, so this doesn't re-read the
+    ~90KB file on every request). The old `WZML-X` wordmark/branding
+    (topbar title, `<title>` tags, error-page "Back to..." links) was
+    replaced with "Stream Bot" throughout for consistency.
+  - The Telegram icon is a small brand glyph (Simple Icons' Telegram path,
+    MIT-licensed), fixed to the bottom-right corner so it doesn't disturb
+    either page's existing layout.
+- **Log-channel caption font**: `send_file()`'s "Requested by / User ID /
+  File ID" (or "Channel ID") text in `WOODStream/utils/file_properties.py`
+  switched from the small-caps unicode styling to plain text.
