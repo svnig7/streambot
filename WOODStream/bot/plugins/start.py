@@ -4,6 +4,7 @@ from WOODStream import __version__
 from WOODStream.bot import WOODStream
 from WOODStream.server.exceptions import FIleNotFound
 from WOODStream.utils.bot_utils import gen_linkx, verify_user
+from WOODStream.utils.file_properties import resend_media
 from WOODStream.config import Telegram
 from WOODStream.utils.database import Database
 from WOODStream.utils.translation import LANG, BUTTON
@@ -61,10 +62,8 @@ async def start(bot: Client, message: Message):
             try:
                 file_check = await db.get_file(usr_cmd)
                 db_id = str(file_check['_id'])
-                file_id = file_check['file_id']
-                file_name = file_check['file_name']
                 if db_id == usr_cmd:
-                    filex = await message.reply_cached_media(file_id=file_id, caption=f'**{file_name}**')
+                    filex = await resend_media(bot, message.chat.id, file_check, reply_to_message_id=message.id)
                     await asyncio.sleep(3600)
                     try:
                         await filex.delete()
