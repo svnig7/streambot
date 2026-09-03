@@ -1,4 +1,5 @@
 from os import environ as env
+from shutil import which
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -29,6 +30,12 @@ class Telegram:
     SECONDARY = True if MODE.lower() == "secondary" else False
     AUTH_USERS = list(set(int(x) for x in str(env.get("AUTH_USERS", "")).split()))
 
+    # --- Playlists / TTL links (merged in from telestream-bot) ---
+    # Maximum number of items accepted into a single playlist minted from an album.
+    MAX_PLAYLIST_ITEMS = int(env.get("MAX_PLAYLIST_ITEMS", "50"))
+    # How often (seconds) the background task sweeps expired (TTL) links/playlists.
+    CLEANUP_INTERVAL = int(env.get("CLEANUP_INTERVAL", "600"))
+
 class Server:
     PORT = int(env.get("PORT", 8080))
     BIND_ADDRESS = str(env.get("BIND_ADDRESS", "0.0.0.0"))
@@ -37,3 +44,9 @@ class Server:
     NO_PORT = str(env.get("NO_PORT", "0").lower()) in ("1", "true", "t", "yes", "y")
     FQDN = str(env.get("FQDN", BIND_ADDRESS))
     URL = "https://{}/".format(FQDN)
+
+    # --- Enhanced web player (merged in from telestream-bot) ---
+    # Both default to on but silently turn off if the binaries aren't installed,
+    # same behaviour telestream-bot had.
+    ENABLE_SUBTITLES = str(env.get("ENABLE_SUBTITLES", "true")).lower() in ("1", "true", "t", "yes", "y") and which("ffmpeg") is not None
+    ENABLE_TRACK_PROBE = str(env.get("ENABLE_TRACK_PROBE", "true")).lower() in ("1", "true", "t", "yes", "y") and which("ffprobe") is not None

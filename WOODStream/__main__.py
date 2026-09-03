@@ -10,6 +10,7 @@ from pyrogram import idle
 from WOODStream.bot import WOODStream
 from WOODStream.server import web_server
 from WOODStream.bot.clients import initialize_clients
+from WOODStream.utils.database import Database
 
 logging.basicConfig(
     level=logging.INFO,
@@ -25,6 +26,22 @@ logging.getLogger("aiohttp.web").setLevel(logging.ERROR)
 server = web.AppRunner(web_server())
 
 loop = asyncio.get_event_loop()
+
+db = Database(Telegram.DATABASE_URL, Telegram.SESSION_NAME)
+
+
+async def ttl_cleanup_loop():
+    """Periodically sweeps expired TTL links/playlists (feature merged in
+    from telestream-bot). Runs forever until the process exits."""
+    while True:
+        await asyncio.sleep(Telegram.CLEANUP_INTERVAL)
+        try:
+            files, playlists = await db.purge_expired()
+            if files or playlists:
+                logging.info(f"TTL sweep: removed {files} expired file(s), {playlists} expired playlist(s)")
+        except Exception:
+            logging.error(traceback.format_exc())
+
 
 async def start_services():
     print()
@@ -45,6 +62,11 @@ async def start_services():
     print()
     print("---------------------- Initializing Clients ----------------------")
     await initialize_clients()
+    print("------------------------------ DONE ------------------------------")
+    print()
+    print("--------------------- Initializing Database ------------------------")
+    await db.ensure_indexes()
+    asyncio.create_task(ttl_cleanup_loop())
     print("------------------------------ DONE ------------------------------")
     print()
     print("--------------------- Initializing Web Server ---------------------")
