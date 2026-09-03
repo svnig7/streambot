@@ -50,6 +50,15 @@ async def root_route_handler(_):
 async def stream_handler(request: web.Request):
     try:
         path = request.match_info["path"]
+        # Video/audio now always uses the enhanced /xstrm player -
+        # opleechplay.html was removed, so a plain-old /watch link for a
+        # playable file just forwards there instead of 404ing.
+        try:
+            file_info = await db.get_file(path)
+        except FIleNotFound as e:
+            raise web.HTTPNotFound(text=e.message)
+        if _playable(file_info.get("mime_type", "")):
+            raise web.HTTPFound(f"/xstrm/{path}")
         return web.Response(text=await render_page(path), content_type='text/html')
     except InvalidHash as e:
         raise web.HTTPForbidden(text=e.message)
@@ -188,12 +197,28 @@ def _playable(mime_type: str) -> bool:
 
 @routes.get("/xstrm/{path}", allow_head=True)
 async def enhanced_player_page(request: web.Request):
-    return web.FileResponse(WEB_DIR / "watch.html")
+    return await _serve_with_bot_link(WEB_DIR / "watch.html")
 
 
 @routes.get("/playlist/{path}", allow_head=True)
 async def playlist_page(request: web.Request):
-    return web.FileResponse(WEB_DIR / "playlist.html")
+    return await _serve_with_bot_link(WEB_DIR / "playlist.html")
+
+
+_page_cache = {}
+
+
+async def _serve_with_bot_link(path: Path):
+    """watch.html/playlist.html are static files, but the topbar title and
+    footer Telegram icon need the bot's own @username link baked in -
+    swapped in for the __BOT_LINK__ placeholder at request time rather than
+    re-reading + re-templating the (large) file on every request."""
+    bot_link = f"https://t.me/{WOODStream.username}"
+    cached = _page_cache.get(path)
+    if not cached:
+        cached = path.read_text(encoding="utf-8")
+        _page_cache[path] = cached
+    return web.Response(text=cached.replace("__BOT_LINK__", bot_link), content_type="text/html")
 
 
 async def _playlist_nav(file_info):
