@@ -1,5 +1,6 @@
 import re
 import time
+import html
 from pyrogram.errors import UserNotParticipant, FloodWait
 from pyrogram.enums.parse_mode import ParseMode
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
@@ -82,11 +83,29 @@ def _extra_rows(_id, file_info):
     Merged in from telestream-bot's playlist + TTL features."""
     rows = []
     if file_info.get("pl"):
-        rows.append([InlineKeyboardButton("📃 ᴘʟᴀʏʟɪsᴛ", url=f"{Server.URL}playlist/{file_info['pl']}")])
+        rows.append([InlineKeyboardButton("PLAYLIST", url=f"{Server.URL}playlist/{file_info['pl']}")])
     if file_info.get("exp"):
         remaining = max(0, int(file_info['exp'] - time.time()))
-        rows.append([InlineKeyboardButton(f"⏳ ᴇxᴘɪʀᴇs ɪɴ {get_readable_time(remaining)}", callback_data="N/A")])
+        rows.append([InlineKeyboardButton(f"EXPIRES IN {get_readable_time(remaining)}", callback_data="N/A")])
     return rows
+
+
+def _build_card_text(file_info, file_name, file_size, page_link, stream_link, file_link):
+    """FILE NAME / FILE SIZE / STREAM LINK / DOWNLOAD LINK / FILE LINK card,
+    with the original upload's caption (if any) reproduced above it verbatim
+    instead of the bot inventing its own metadata."""
+    caption_html = file_info.get("caption_html")
+    parts = []
+    if caption_html:
+        parts.append(caption_html)
+    parts.append(
+        f"<b>FILE NAME :</b> <code>{html.escape(file_name)}</code>\n"
+        f"<b>FILE SIZE :</b> {file_size}\n"
+        f"<b>STREAM LINK :</b> {page_link}\n"
+        f"<b>DOWNLOAD LINK :</b> {stream_link}\n"
+        f"<b>FILE LINK :</b> {file_link}"
+    )
+    return "\n\n".join(parts)
 
 
 async def gen_link(_id):
@@ -101,24 +120,24 @@ async def gen_link(_id):
     file_link = f"{Server.URL}file/{_id}"
     deep_link = f"https://t.me/{WOODStream.username}?start=file_{_id}"
 
-    if "video" in mime_type:
-        stream_text = LANG.STREAM_TEXT.format(file_name, file_size, page_link, stream_link, file_link)
+    stream_text = _build_card_text(file_info, file_name, file_size, player_link, stream_link, file_link)
+
+    if "video" in mime_type or "audio" in mime_type:
         reply_markup = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("sᴛʀᴇᴀᴍ", url=player_link), InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ", url=stream_link)],
-                [InlineKeyboardButton("ɢᴇᴛ ғɪʟᴇ", url=file_link), InlineKeyboardButton("ʀᴇᴠᴏᴋᴇ", callback_data=f"msgdelpvt_{_id}")],
+                [InlineKeyboardButton("STREAM", url=player_link), InlineKeyboardButton("DOWNLOAD", url=stream_link)],
+                [InlineKeyboardButton("GET FILE", url=file_link), InlineKeyboardButton("REVOKE", callback_data=f"msgdelpvt_{_id}")],
                 *_extra_rows(_id, file_info),
-                [InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="close")]
+                [InlineKeyboardButton("CLOSE", callback_data="close")]
             ]
         )
     else:
-        stream_text = LANG.STREAM_TEXT_X.format(file_name, file_size, page_link, stream_link, file_link)
         reply_markup = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ", url=stream_link)],
-                [InlineKeyboardButton("ɢᴇᴛ ғɪʟᴇ", url=file_link), InlineKeyboardButton("ʀᴇᴠᴏᴋᴇ", callback_data=f"msgdelpvt_{_id}")],
+                [InlineKeyboardButton("DOWNLOAD", url=stream_link)],
+                [InlineKeyboardButton("GET FILE", url=file_link), InlineKeyboardButton("REVOKE", callback_data=f"msgdelpvt_{_id}")],
                 *_extra_rows(_id, file_info),
-                [InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="close")]
+                [InlineKeyboardButton("CLOSE", callback_data="close")]
             ]
         )
     return reply_markup, stream_text
@@ -137,21 +156,21 @@ async def gen_linkx(m:Message , _id, name: list):
     file_link = f"{Server.URL}file/{_id}"
     deep_link = f"https://t.me/{WOODStream.username}?start=file_{_id}"
 
-    if "video" in mime_type:
-        stream_text= LANG.STREAM_TEXT_X.format(file_name, file_size, page_link, stream_link, file_link)
+    stream_text = _build_card_text(file_info, file_name, file_size, player_link, stream_link, file_link)
+
+    if "video" in mime_type or "audio" in mime_type:
         reply_markup = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("sᴛʀᴇᴀᴍ", url=player_link), InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ", url=stream_link)],
-                [InlineKeyboardButton("ɢᴇᴛ ғɪʟᴇ", url=file_link)],
+                [InlineKeyboardButton("STREAM", url=player_link), InlineKeyboardButton("DOWNLOAD", url=stream_link)],
+                [InlineKeyboardButton("GET FILE", url=file_link)],
                 *_extra_rows(_id, file_info),
             ]
         )
     else:
-        stream_text= LANG.STREAM_TEXT_X.format(file_name, file_size, page_link, stream_link, file_link)
         reply_markup = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ", url=stream_link)],
-                [InlineKeyboardButton("ɢᴇᴛ ғɪʟᴇ", url=file_link)],
+                [InlineKeyboardButton("DOWNLOAD", url=stream_link)],
+                [InlineKeyboardButton("GET FILE", url=file_link)],
                 *_extra_rows(_id, file_info),
             ]
         )
@@ -165,11 +184,15 @@ async def gen_playlist_link(token):
     playlist_link = f"{Server.URL}playlist/{token}"
     name = doc["name"] if doc else "Playlist"
     count = len(doc["items"]) if doc else 0
-    text = f"<b>📃 {name}</b>\n<b>ғɪʟᴇs :</b> <code>{count}</code>\n<b>ᴘʟᴀʏʟɪsᴛ ʟɪɴᴋ :</b> <code>{playlist_link}</code>"
+    text = (
+        f"<b>PLAYLIST :</b> {name}\n"
+        f"<b>FILES :</b> {count}\n"
+        f"<b>PLAYLIST LINK :</b> {playlist_link}"
+    )
     reply_markup = InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton("▶️ ᴏᴘᴇɴ ᴘʟᴀʏʟɪsᴛ", url=playlist_link)],
-            [InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="close")]
+            [InlineKeyboardButton("OPEN PLAYLIST", url=playlist_link)],
+            [InlineKeyboardButton("CLOSE", callback_data="close")]
         ]
     )
     return reply_markup, text

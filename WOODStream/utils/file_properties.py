@@ -105,13 +105,18 @@ def get_file_info(message):
         user_idx = message.from_user.id
     else:
         user_idx = message.chat.id
+    # Original caption (if any) is preserved so the bot's reply can reuse
+    # whatever rich formatting (title/plot/etc.) was already on the upload,
+    # instead of the bot inventing its own metadata.
+    caption_html = message.caption.html if getattr(message, "caption", None) else None
     return {
         "user_id": user_idx,
         "file_id": getattr(media, "file_id", ""),
         "file_unique_id": getattr(media, "file_unique_id", ""),
         "file_name": get_name(message),
         "file_size": getattr(media, "file_size", 0),
-        "mime_type": getattr(media, "mime_type", "None/unknown")
+        "mime_type": getattr(media, "mime_type", "None/unknown"),
+        "caption_html": caption_html,
     }
 
 
