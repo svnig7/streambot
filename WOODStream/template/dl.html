@@ -2,43 +2,142 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta property="og:image" content="https://www.flaticon.com/premium-icon/icons/svg/2626/2626281.svg" itemprop="thumbnailUrl">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{file_name}}</title>
-    <link rel="stylesheet" type='text/css' href="https://drive.google.com/uc?export=view&id=1pVLG4gZy7jdow3sO-wFS06aP_A9QX0O6">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Delius">
+    <style>
+        :root {
+            --bg: #030007;
+            --surface: rgba(12, 8, 24, .82);
+            --line: rgba(0, 255, 240, .25);
+            --text: #f2f6ff;
+            --muted: #b6aee0;
+            --accent: #00fff2;
+            --accent-2: #ff2bd6;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 18% 8%, rgba(0, 255, 240, .16), transparent 38%),
+                radial-gradient(circle at 88% 18%, rgba(255, 43, 214, .14), transparent 34%),
+                radial-gradient(circle at 50% 100%, rgba(0, 255, 240, .08), transparent 45%),
+                var(--bg);
+        }
+
+        .card {
+            width: 100%;
+            max-width: 440px;
+            padding: 34px 28px;
+            border-radius: 20px;
+            text-align: center;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            backdrop-filter: blur(14px);
+            box-shadow:
+                0 0 0 1px rgba(0, 255, 240, .10),
+                0 0 40px rgba(0, 255, 240, .12),
+                0 0 90px rgba(255, 43, 214, .10),
+                0 20px 60px rgba(0, 0, 0, .55);
+        }
+
+        .icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 18px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(0, 255, 240, .18), rgba(255, 43, 214, .12));
+            border: 1px solid var(--line);
+            box-shadow: 0 0 20px rgba(0, 255, 240, .35);
+        }
+
+        .icon svg {
+            width: 30px;
+            height: 30px;
+            stroke: var(--accent);
+            filter: drop-shadow(0 0 6px rgba(0, 255, 240, .7));
+        }
+
+        #file-name {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.4;
+            word-break: break-word;
+            margin-bottom: 6px;
+        }
+
+        .hint {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 26px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: .02em;
+            text-decoration: none;
+            color: #04070c;
+            background: linear-gradient(120deg, var(--accent), var(--accent-2));
+            box-shadow: 0 0 16px rgba(0, 255, 240, .55), 0 0 40px rgba(255, 43, 214, .3);
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 22px rgba(0, 255, 240, .7), 0 0 55px rgba(255, 43, 214, .45);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        footer {
+            margin-top: 22px;
+            font-size: 11px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            opacity: .7;
+        }
+    </style>
 </head>
 
-<body class='cyber'>
-    <header>
-        <div class="toogle"></div>
-        <div id="file-name" class="cyber">
-            {{file_name}}
+<body>
+    <div class="card">
+        <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v12"></path>
+                <path d="M7 10l5 5 5-5"></path>
+                <path d="M5 21h14"></path>
+            </svg>
         </div>
-    </header>
-
-    <div class="container">
-        <a href="{{file_url}}">
-            <button class="cybr-btn">
-                Download
-                <span aria-hidden>_</span>
-                <span aria-hidden class="cybr-btn__glitch">_404 Error</span>
-                <span aria-hidden class="cybr-btn__tag">_%s</span>
-            </button>
-        </a>
+        <div id="file-name">{{file_name}}</div>
+        <div class="hint">{{file_size}}</div>
+        <a class="btn" href="{{file_url}}">Download File</a>
+        <footer>Streambot &middot; Direct Link</footer>
     </div>
-	<script>
-        const body = document.querySelector('body');
-        const title = document.querySelector('#file-name');
-        const footer = document.querySelector('footer');
-        const toogle = document.querySelector('.toogle');
-        toogle.onclick = () => {
-            body.classList.toggle('dark')
-            footer.classList.toggle('dark')
-            title.classList.toggle('dark')
-        }
-    </script>
 </body>
 </html>

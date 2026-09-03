@@ -17,16 +17,16 @@
     <style>
         :root {
             color-scheme: dark;
-            --bg: #000003;
-            --surface: #04040B;
-            --surface-2: #07070F;
-            --line: rgba(42, 95, 208, .28);
-            --line-2: #2A5FD0;
+            --bg: #020004;
+            --surface: #05020c;
+            --surface-2: #080410;
+            --line: rgba(0, 255, 240, .32);
+            --line-2: #00fff2;
             --text: #F5F7FF;
-            --muted: #C3CBDF;
-            --accent: #3D87FF;
-            --accent-2: #5B9DFF;
-            --accent-soft: #06153F;
+            --muted: #bdb3e6;
+            --accent: #00fff2;
+            --accent-2: #ff2bd6;
+            --accent-soft: rgba(0, 255, 240, .10);
             --r: 12px;
             --r-frame: 18px;
             --pad: clamp(.7rem, 2vw, 1.5rem);
@@ -479,6 +479,13 @@
                 animation-iteration-count: 1 !important;
                 transition-duration: .001ms !important;
             }
+        }
+        /* --- Neon premium accents (appended) --- */
+        .topbar {
+            box-shadow: 0 0 0 1px rgba(0, 255, 240, .22), 0 8px 30px rgba(0, 0, 0, .6), 0 0 24px rgba(255, 43, 214, .12);
+        }
+        .wordmark {
+            text-shadow: 0 0 10px rgba(0, 255, 240, .65), 0 0 26px rgba(255, 43, 214, .35);
         }
     </style>
 </head>
