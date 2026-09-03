@@ -1,4 +1,5 @@
 from __future__ import annotations
+import html
 import logging
 from datetime import datetime
 from pyrogram import Client
@@ -109,6 +110,11 @@ def get_file_info(message):
     # whatever rich formatting (title/plot/etc.) was already on the upload,
     # instead of the bot inventing its own metadata.
     caption_html = message.caption.html if getattr(message, "caption", None) else None
+    # Custom cover/thumbnail (e.g. a movie poster attached to the video) is
+    # captured so it can be reproduced exactly on resend, instead of Telegram
+    # falling back to an auto-extracted video frame.
+    thumbs = getattr(media, "thumbs", None)
+    cover_file_id = thumbs[-1].file_id if thumbs else None
     return {
         "user_id": user_idx,
         "file_id": getattr(media, "file_id", ""),
@@ -117,7 +123,55 @@ def get_file_info(message):
         "file_size": getattr(media, "file_size", 0),
         "mime_type": getattr(media, "mime_type", "None/unknown"),
         "caption_html": caption_html,
+        "cover_file_id": cover_file_id,
+        "kind": message.media.value if message.media else None,
     }
+
+
+async def resend_media(client: Client, chat_id, file_info: dict, reply_to_message_id=None, caption_override=None):
+    """Resends a stored file exactly as it was originally uploaded - same
+    caption, same cover/thumbnail. Used for the 'Get File' buttons and for
+    the FLOG_CHANNEL log copy.
+
+    Tries the newer `cover=` parameter first (Bot API's dedicated video
+    cover), then falls back to the classic `thumb=` parameter, mirroring the
+    approach of the video-cover-bot snippet this was ported from - some
+    Pyrogram builds don't have `cover=` yet, so the fallback keeps this
+    working everywhere.
+    """
+    file_id = file_info["file_id"]
+    kind = file_info.get("kind")
+    cover = file_info.get("cover_file_id")
+    caption_html = caption_override if caption_override is not None else file_info.get("caption_html")
+    caption = caption_html if caption_html else f"<b>{html.escape(file_info.get('file_name') or '')}</b>"
+
+    base = dict(chat_id=chat_id, caption=caption, parse_mode=ParseMode.HTML)
+    if reply_to_message_id:
+        base["reply_to_message_id"] = reply_to_message_id
+
+    if kind == "video" and cover:
+        try:
+            return await client.send_video(video=file_id, cover=cover, supports_streaming=True, **base)
+        except TypeError:
+            pass
+        except Exception as e:
+            logging.debug(f"send_video(cover=...) failed, falling back to thumb=: {e}")
+        try:
+            return await client.send_video(video=file_id, thumb=cover, supports_streaming=True, **base)
+        except Exception as e:
+            logging.debug(f"send_video(thumb=...) failed, falling back to cached media: {e}")
+    elif kind == "audio" and cover:
+        try:
+            return await client.send_audio(audio=file_id, thumb=cover, **base)
+        except Exception as e:
+            logging.debug(f"send_audio(thumb=...) failed, falling back to cached media: {e}")
+    elif kind == "animation" and cover:
+        try:
+            return await client.send_animation(animation=file_id, thumb=cover, **base)
+        except Exception as e:
+            logging.debug(f"send_animation(thumb=...) failed, falling back to cached media: {e}")
+
+    return await client.send_cached_media(file_id=file_id, **base)
 
 
 async def update_file_id(msg_id, multi_clients):
@@ -131,19 +185,19 @@ async def update_file_id(msg_id, multi_clients):
 
 
 async def send_file(client: Client, db_id, file_id: str, message):
-    file_caption = getattr(message, 'caption', None) or get_name(message)
-    log_msg = await client.send_cached_media(chat_id=Telegram.FLOG_CHANNEL, file_id=file_id,
-                                             caption=f'**{file_caption}**')
+    """Logs the upload into FLOG_CHANNEL, reproducing its original
+    caption/cover exactly (merged in per user request)."""
+    file_info = await db.get_file(db_id)
+    log_msg = await resend_media(client, Telegram.FLOG_CHANNEL, file_info)
 
     if message.chat.type == ChatType.PRIVATE:
         await log_msg.reply_text(
-            text=f"**ʀᴇᴏ̨ᴜᴇsᴛᴇᴅ ʙʏ :** [{message.from_user.first_name}](tg://user?id={message.from_user.id})\n**ᴜsᴇʀ ɪᴅ :** `{message.from_user.id}`\n**ғɪʟᴇ ɪᴅ :** `{db_id}`",
+            text=f"**Requested by :** [{message.from_user.first_name}](tg://user?id={message.from_user.id})\n**User ID :** `{message.from_user.id}`\n**File ID :** `{db_id}`",
             disable_web_page_preview=True, parse_mode=ParseMode.MARKDOWN, quote=True)
     else:
         await log_msg.reply_text(
-            text=f"**ʀᴇᴏ̨ᴜᴇsᴛᴇᴅ ʙʏ :** {message.chat.title} \n**ᴄʜᴀɴɴᴇʟ ɪᴅ :** `{message.chat.id}`\n**ғɪʟᴇ ɪᴅ :** `{db_id}`",
+            text=f"**Requested by :** {message.chat.title} \n**Channel ID :** `{message.chat.id}`\n**File ID :** `{db_id}`",
             disable_web_page_preview=True, parse_mode=ParseMode.MARKDOWN, quote=True)
 
     return log_msg
-    # return await client.send_cached_media(Telegram.BIN_CHANNEL, file_id)
 
