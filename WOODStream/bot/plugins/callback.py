@@ -158,6 +158,9 @@ async def gen_file_menu(_id, file_list_no, update: CallbackQuery):
 
     page_link = f"{Server.URL}watch/{myfile_info['_id']}"
     stream_link = f"{Server.URL}dl/{myfile_info['_id']}"
+    # Enhanced multi-audio/subtitle player for video/audio (merged in from telestream-bot).
+    if str((myfile_info.get('mime_type') or '').split('/')[0].strip()) in ('video', 'audio'):
+        page_link = f"{Server.URL}xstrm/{myfile_info['_id']}"
     if "video" in file_type.lower():
         MYFILES_BUTTONS = InlineKeyboardMarkup(
             [

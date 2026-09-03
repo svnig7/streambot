@@ -23,7 +23,8 @@ broadcast_ids = {}
 async def sts(c: Client, m: Message):
     await m.reply_text(text=f"""**ᴛᴏᴛᴀʟ ᴜsᴇʀs ɪɴ ᴅʙ :** `{await db.total_users_count()}`
 **ʙᴀɴɴᴇᴅ ᴜsᴇʀs ɪɴ ᴅʙ :** `{await db.total_banned_users_count()}`
-**ᴛᴏᴛᴀʟ ʟɪɴᴋs ɢᴇɴᴇʀᴀᴛᴇᴅ : ** `{await db.total_files()}`"""
+**ᴛᴏᴛᴀʟ ʟɪɴᴋs ɢᴇɴᴇʀᴀᴛᴇᴅ : ** `{await db.total_files()}`
+**ᴛᴏᴛᴀʟ ᴘʟᴀʏʟɪsᴛs : ** `{await db.playlist.count_documents({})}`"""
                        , parse_mode=ParseMode.MARKDOWN, quote=True)
 
 

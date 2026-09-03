@@ -4,6 +4,7 @@ from WOODStream.bot import WOODStream, multi_clients
 from WOODStream.utils.bot_utils import is_user_banned, is_user_exist, is_user_joined, gen_link, is_channel_banned, is_channel_exist, is_user_authorized
 from WOODStream.utils.database import Database
 from WOODStream.utils.file_properties import get_file_ids, get_file_info
+from WOODStream.utils.playlist_utils import handle_private_album, handle_channel_album
 from WOODStream.config import Telegram
 from pyrogram import filters, Client
 from pyrogram.errors import FloodWait
@@ -34,6 +35,13 @@ async def private_receive_handler(bot: Client, message: Message):
     if Telegram.FORCE_SUB:
         if not await is_user_joined(bot, message):
             return
+
+    # Albums get bundled into one playlist link instead of one reply per file
+    # (feature merged in from telestream-bot's `/stream -pl` flag).
+    if message.media_group_id:
+        await handle_private_album(bot, message)
+        return
+
     try:
         inserted_id = await db.add_file(get_file_info(message))
         await get_file_ids(False, inserted_id, multi_clients, message)
@@ -56,7 +64,6 @@ async def private_receive_handler(bot: Client, message: Message):
 @WOODStream.on_message(
     filters.channel
     & ~filters.forwarded
-    & ~filters.media_group
     & (
             filters.document
             | filters.video
@@ -70,6 +77,12 @@ async def channel_receive_handler(bot: Client, message: Message):
     if await is_channel_banned(bot, message):
         return
     await is_channel_exist(bot, message)
+
+    # Albums posted to a channel become one playlist link (feature merged in
+    # from telestream-bot).
+    if message.media_group_id:
+        await handle_channel_album(bot, message)
+        return
 
     try:
         inserted_id = await db.add_file(get_file_info(message))
