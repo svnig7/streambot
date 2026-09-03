@@ -135,3 +135,24 @@ running an existing streambot deployment as-is.
 - Playlist TTL is settable via the DB layer (`add_playlist(..., exp=...)`)
   but there's currently no bot command wired up to set a TTL on an entire
   playlist at once (only per-file, and only after the fact via `/ttl`).
+
+## Round 2: caption-preserving link cards + neon premium theme
+
+- **Link message format changed** (`gen_link`/`gen_linkx` in
+  `WOODStream/utils/bot_utils.py`): the reply now reproduces the original
+  upload's caption verbatim (if it had one - captured via Pyrogram's
+  `message.caption.html`, stored as `caption_html` on the file doc), followed
+  by a plain `FILE NAME :` / `FILE SIZE :` / `STREAM LINK :` /
+  `DOWNLOAD LINK :` / `FILE LINK :` block and `STREAM / DOWNLOAD / GET FILE /
+  REVOKE / CLOSE` buttons. No TMDB or other external metadata lookup was
+  added - whatever caption the file already had (e.g. forwarded from a
+  channel that includes title/plot/etc.) is what shows up. Files with no
+  caption just get the plain link block.
+- **Neon premium theme** applied to all four web pages:
+  `template/dl.html` (rewritten standalone, no more external CSS
+  dependency), `template/opleechplay.html`, `template/watch.html`
+  (the `/xstrm` enhanced player), and `template/playlist.html`. All four
+  already used CSS custom properties for their palette, so this was a
+  `:root` variable swap (cyan `#00fff2` / magenta `#ff2bd6` on near-black)
+  plus a handful of appended glow rules (`box-shadow`/`text-shadow`) on
+  cards, buttons, and the topbar - no structural HTML/JS was touched.
