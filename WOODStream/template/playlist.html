@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="referrer" content="no-referrer">
     <meta name="theme-color" content="#000003">
-    <title>Playlist · WZML-X</title>
+    <title>Playlist · Stream Bot</title>
     <link rel="icon"
         href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22.5' fill='%23F5F7FF'/%3E%3Cpath d='M 19.4 42.6 C 20.0 55.4 22.4 66.4 29.8 68.3 C 37.0 70.1 43.2 61.0 45.2 48.8 C 47.5 61.0 53.4 66.6 61.0 68.3 C 68.6 70.0 75.6 55.5 80.6 35.3' fill='none' stroke='%233D87FF' stroke-width='11.1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -487,6 +487,31 @@
         .wordmark {
             text-shadow: 0 0 10px rgba(0, 255, 240, .65), 0 0 26px rgba(255, 43, 214, .35);
         }
+        .site-footer {
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            z-index: 25;
+        }
+        .site-footer a.tg-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(5, 2, 12, .78);
+            border: 1px solid var(--line);
+            box-shadow: 0 0 14px rgba(0, 255, 240, .35), 0 4px 18px rgba(0, 0, 0, .5);
+            backdrop-filter: blur(8px);
+            text-decoration: none;
+        }
+        .site-footer a.tg-link svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--accent);
+            filter: drop-shadow(0 0 6px rgba(0, 255, 240, .6));
+        }
     </style>
 </head>
 
@@ -501,7 +526,7 @@
                     d="M 19.4 42.6 C 20.0 55.4 22.4 66.4 29.8 68.3 C 37.0 70.1 43.2 61.0 45.2 48.8 C 47.5 61.0 53.4 66.6 61.0 68.3 C 68.6 70.0 75.6 55.5 80.6 35.3"
                     fill="none" stroke="#3D87FF" stroke-width="11.1" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-            <span class="wordmark"><a href="/">WZML-X</a></span>
+            <span class="wordmark"><a href="__BOT_LINK__" target="_blank" rel="noopener">Stream Bot</a></span>
             <span class="now" id="now"></span>
         </header>
     </div>
@@ -513,6 +538,12 @@
         </div>
         <div class="grid" id="grid"></div>
     </main>
+
+    <footer class="site-footer">
+        <a class="tg-link" href="__BOT_LINK__" target="_blank" rel="noopener" title="Open bot in Telegram">
+            <svg viewBox="0 0 24 24"><path d="M21.94 3.63a1.6 1.6 0 0 0-1.66-.2L2.4 10.6a1.53 1.53 0 0 0 .1 2.87l4.5 1.42 1.74 5.6a1.5 1.5 0 0 0 2.47.6l2.5-2.3 4.4 3.24a1.55 1.55 0 0 0 2.45-.93l3.36-15.6a1.6 1.6 0 0 0-.98-1.87ZM9.3 14.9l-1.1 3.5-1.05-3.4 10.9-8.05Zm2.02 2.55-.9-.66 8.35-8.7-9.7 8.6-.03.03Z"/></svg>
+        </a>
+    </footer>
 
     <script>
         (function () {
@@ -636,7 +667,7 @@
             function render(data) {
                 var items = data.items || [];
                 var title = data.name || "Playlist";
-                document.title = title + " · WZML-X";
+                document.title = title + " · Stream Bot";
                 el("title").textContent = title;
                 el("now").textContent = title;
 
@@ -649,7 +680,7 @@
 
                 if (!items.length) {
                     note("This playlist is empty",
-                        "None of its files are available any more.", "Back to WZML-X");
+                        "None of its files are available any more.", "Back to Stream Bot");
                     return;
                 }
 
@@ -668,7 +699,7 @@
             if (!TOKEN) {
                 el("title").textContent = "Nothing to play";
                 note("Nothing to play", "This link is missing its playlist reference.",
-                    "Back to WZML-X");
+                    "Back to Stream Bot");
                 return;
             }
 
@@ -685,11 +716,11 @@
                     el("title").textContent = "Playlist unavailable";
                     if (e && e.message === "gone") {
                         note("This playlist is no longer available",
-                            "It was removed, or the link is wrong.", "Back to WZML-X");
+                            "It was removed, or the link is wrong.", "Back to Stream Bot");
                     } else {
                         note("Could not load this playlist",
                             "The streaming service did not respond. Try again shortly.",
-                            "Back to WZML-X");
+                            "Back to Stream Bot");
                     }
                 });
         })();
