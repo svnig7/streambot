@@ -1,9 +1,12 @@
+import re
+import time
 from pyrogram.errors import UserNotParticipant, FloodWait
 from pyrogram.enums.parse_mode import ParseMode
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from WOODStream.utils.translation import LANG
 from WOODStream.utils.database import Database
 from WOODStream.utils.human_readable import humanbytes
+from WOODStream.utils.time_format import get_readable_time
 from WOODStream.config import Telegram, Server
 from WOODStream.bot import WOODStream
 import asyncio
@@ -70,6 +73,22 @@ async def is_user_joined(bot, message: Message):
     
 #---------------------[ PRIVATE GEN LINK + CALLBACK ]---------------------#
 
+def _playable(mime_type: str) -> bool:
+    return bool(mime_type) and (mime_type.startswith("video") or mime_type.startswith("audio"))
+
+
+def _extra_rows(_id, file_info):
+    """Playlist / TTL rows appended to the normal streambot button layout.
+    Merged in from telestream-bot's playlist + TTL features."""
+    rows = []
+    if file_info.get("pl"):
+        rows.append([InlineKeyboardButton("📃 ᴘʟᴀʏʟɪsᴛ", url=f"{Server.URL}playlist/{file_info['pl']}")])
+    if file_info.get("exp"):
+        remaining = max(0, int(file_info['exp'] - time.time()))
+        rows.append([InlineKeyboardButton(f"⏳ ᴇxᴘɪʀᴇs ɪɴ {get_readable_time(remaining)}", callback_data="N/A")])
+    return rows
+
+
 async def gen_link(_id):
     file_info = await db.get_file(_id)
     file_name = file_info['file_name']
@@ -77,6 +96,7 @@ async def gen_link(_id):
     mime_type = file_info['mime_type']
 
     page_link = f"{Server.URL}watch/{_id}"
+    player_link = f"{Server.URL}xstrm/{_id}" if _playable(mime_type) else page_link
     stream_link = f"{Server.URL}dl/{_id}"
     file_link = f"{Server.URL}file/{_id}"
     deep_link = f"https://t.me/{WOODStream.username}?start=file_{_id}"
@@ -85,8 +105,9 @@ async def gen_link(_id):
         stream_text = LANG.STREAM_TEXT.format(file_name, file_size, page_link, stream_link, file_link)
         reply_markup = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("sᴛʀᴇᴀᴍ", url=page_link), InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ", url=stream_link)],
+                [InlineKeyboardButton("sᴛʀᴇᴀᴍ", url=player_link), InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ", url=stream_link)],
                 [InlineKeyboardButton("ɢᴇᴛ ғɪʟᴇ", url=file_link), InlineKeyboardButton("ʀᴇᴠᴏᴋᴇ", callback_data=f"msgdelpvt_{_id}")],
+                *_extra_rows(_id, file_info),
                 [InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="close")]
             ]
         )
@@ -96,6 +117,7 @@ async def gen_link(_id):
             [
                 [InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ", url=stream_link)],
                 [InlineKeyboardButton("ɢᴇᴛ ғɪʟᴇ", url=file_link), InlineKeyboardButton("ʀᴇᴠᴏᴋᴇ", callback_data=f"msgdelpvt_{_id}")],
+                *_extra_rows(_id, file_info),
                 [InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="close")]
             ]
         )
@@ -110,6 +132,7 @@ async def gen_linkx(m:Message , _id, name: list):
     file_size = humanbytes(file_info['file_size'])
 
     page_link = f"{Server.URL}watch/{_id}"
+    player_link = f"{Server.URL}xstrm/{_id}" if _playable(mime_type) else page_link
     stream_link = f"{Server.URL}dl/{_id}"
     file_link = f"{Server.URL}file/{_id}"
     deep_link = f"https://t.me/{WOODStream.username}?start=file_{_id}"
@@ -118,8 +141,9 @@ async def gen_linkx(m:Message , _id, name: list):
         stream_text= LANG.STREAM_TEXT_X.format(file_name, file_size, page_link, stream_link, file_link)
         reply_markup = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("sᴛʀᴇᴀᴍ", url=page_link), InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ", url=stream_link)],
-                [InlineKeyboardButton("ɢᴇᴛ ғɪʟᴇ", url=file_link)]
+                [InlineKeyboardButton("sᴛʀᴇᴀᴍ", url=player_link), InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ", url=stream_link)],
+                [InlineKeyboardButton("ɢᴇᴛ ғɪʟᴇ", url=file_link)],
+                *_extra_rows(_id, file_info),
             ]
         )
     else:
@@ -127,10 +151,50 @@ async def gen_linkx(m:Message , _id, name: list):
         reply_markup = InlineKeyboardMarkup(
             [
                 [InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ", url=stream_link)],
-                [InlineKeyboardButton("ɢᴇᴛ ғɪʟᴇ", url=file_link)]
+                [InlineKeyboardButton("ɢᴇᴛ ғɪʟᴇ", url=file_link)],
+                *_extra_rows(_id, file_info),
             ]
         )
     return reply_markup, stream_text
+
+
+#---------------------[ PLAYLIST LINK (merged in from telestream-bot) ]---------------------#
+
+async def gen_playlist_link(token):
+    doc = await db.get_playlist(token)
+    playlist_link = f"{Server.URL}playlist/{token}"
+    name = doc["name"] if doc else "Playlist"
+    count = len(doc["items"]) if doc else 0
+    text = f"<b>📃 {name}</b>\n<b>ғɪʟᴇs :</b> <code>{count}</code>\n<b>ᴘʟᴀʏʟɪsᴛ ʟɪɴᴋ :</b> <code>{playlist_link}</code>"
+    reply_markup = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton("▶️ ᴏᴘᴇɴ ᴘʟᴀʏʟɪsᴛ", url=playlist_link)],
+            [InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="close")]
+        ]
+    )
+    return reply_markup, text
+
+
+#---------------------[ TTL / POSTER REPLY COMMANDS (merged in from telestream-bot) ]---------------------#
+
+_ID_IN_URL = re.compile(r"/(?:watch|xstrm|dl)/([0-9a-fA-F]{24})")
+
+
+def file_id_from_message(message: Message):
+    """Pulls the streambot file _id back out of one of the bot's own
+    'here's your link' messages, so /ttl and /poster can be sent as a
+    reply to it (mirrors how /stream -d worked in telestream-bot)."""
+    if not message or not message.reply_markup:
+        return None
+    for row in message.reply_markup.inline_keyboard:
+        for button in row:
+            if button.url:
+                match = _ID_IN_URL.search(button.url)
+                if match:
+                    return match.group(1)
+            if button.callback_data and button.callback_data.startswith("msgdelpvt_"):
+                return button.callback_data.split("_", 1)[1]
+    return None
 
 #---------------------[ USER BANNED ]---------------------#
 

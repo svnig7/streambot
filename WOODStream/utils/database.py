@@ -12,6 +12,14 @@ class Database:
         self.col = self.db.users
         self.black = self.db.blacklist
         self.file = self.db.file
+        # New collection for playlists, merged in from telestream-bot.
+        self.playlist = self.db.playlist
+
+    async def ensure_indexes(self):
+        # Merged in from telestream-bot: keeps playlist lookups/TTL sweeps cheap.
+        await self.playlist.create_index("token", unique=True)
+        await self.file.create_index("exp")
+        await self.playlist.create_index("exp")
 
 #---------------------[ NEW USER ]---------------------#
     def new_user(self, id):
@@ -71,6 +79,11 @@ class Database:
         file_info["time"] = time.time()
         fetch_old = await self.get_file_by_fileuniqueid(file_info["user_id"], file_info["file_unique_id"])
         if fetch_old:
+            # Same file re-sent (e.g. re-uploaded into a new album/playlist) - reuse the
+            # existing doc, but still let this upload attach playlist/TTL fields to it.
+            extra = {k: v for k, v in file_info.items() if k in ("pl", "pi", "exp", "poster") and v is not None}
+            if extra:
+                await self.file.update_one({"_id": fetch_old["_id"]}, {"$set": extra})
             return fetch_old["_id"]
         await self.count_links(file_info["user_id"], "+")
         return (await self.file.insert_one(file_info)).inserted_id
@@ -88,6 +101,10 @@ class Database:
         try:
             file_info=await self.file.find_one({"_id": ObjectId(_id)})
             if not file_info:
+                raise FIleNotFound
+            if file_info.get("exp") and file_info["exp"] < time.time():
+                # TTL link expired (feature merged in from telestream-bot) - purge and pretend it never existed.
+                await self.file.delete_one({"_id": file_info["_id"]})
                 raise FIleNotFound
             return file_info
         except InvalidId:
@@ -132,3 +149,46 @@ class Database:
             await self.col.update_one({"id": id}, {"$inc": {"Links": -1}})
         elif operation == "+":
             await self.col.update_one({"id": id}, {"$inc": {"Links": 1}})
+
+# ---------------------[ TTL LINKS (merged in from telestream-bot) ]---------------------#
+    async def set_ttl(self, _id, exp):
+        """exp is an epoch timestamp, or None to clear the expiry."""
+        await self.file.update_one({"_id": ObjectId(_id)}, {"$set": {"exp": exp}})
+
+# ---------------------[ CUSTOM THUMBNAILS (merged in from telestream-bot) ]---------------------#
+    async def set_poster(self, _id, poster_url):
+        await self.file.update_one({"_id": ObjectId(_id)}, {"$set": {"poster": poster_url}})
+
+# ---------------------[ PLAYLISTS (merged in from telestream-bot) ]---------------------#
+    async def add_playlist(self, token, name, items, poster=None, exp=None, owner_id=None):
+        doc = dict(
+            token=token,
+            name=name,
+            items=items,
+            poster=poster,
+            exp=exp,
+            owner_id=owner_id,
+            time=time.time(),
+        )
+        await self.playlist.update_one({"token": token}, {"$set": doc}, upsert=True)
+        return token
+
+    async def get_playlist(self, token):
+        doc = await self.playlist.find_one({"token": token})
+        if not doc:
+            return None
+        if doc.get("exp") and doc["exp"] < time.time():
+            await self.playlist.delete_one({"token": token})
+            return None
+        return doc
+
+    async def rm_playlist(self, token):
+        await self.playlist.delete_one({"token": token})
+
+# ---------------------[ EXPIRY SWEEP (merged in from telestream-bot) ]---------------------#
+    async def purge_expired(self):
+        """Deletes any file/playlist docs whose TTL has passed. Returns (files, playlists) removed."""
+        now = time.time()
+        files_result = await self.file.delete_many({"exp": {"$ne": None, "$lt": now}})
+        playlists_result = await self.playlist.delete_many({"exp": {"$ne": None, "$lt": now}})
+        return files_result.deleted_count, playlists_result.deleted_count
