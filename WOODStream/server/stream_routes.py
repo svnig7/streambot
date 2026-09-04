@@ -197,28 +197,30 @@ def _playable(mime_type: str) -> bool:
 
 @routes.get("/xstrm/{path}", allow_head=True)
 async def enhanced_player_page(request: web.Request):
-    return await _serve_with_bot_link(WEB_DIR / "watch.html")
+    return await _serve_static_page(WEB_DIR / "watch.html")
 
 
 @routes.get("/playlist/{path}", allow_head=True)
 async def playlist_page(request: web.Request):
-    return await _serve_with_bot_link(WEB_DIR / "playlist.html")
+    return await _serve_static_page(WEB_DIR / "playlist.html")
 
 
 _page_cache = {}
 
 
-async def _serve_with_bot_link(path: Path):
-    """watch.html/playlist.html are static files, but the topbar title and
-    footer Telegram icon need the bot's own @username link baked in -
-    swapped in for the __BOT_LINK__ placeholder at request time rather than
-    re-reading + re-templating the (large) file on every request."""
+async def _serve_static_page(path: Path):
+    """watch.html/playlist.html are static files, but the topbar title,
+    footer Telegram icon, and favicon need values baked in - swapped in for
+    placeholders at request time rather than re-reading + re-templating the
+    (large) file on every request."""
     bot_link = f"https://t.me/{WOODStream.username}"
+    favicon_url = Server.FAVICON_URL or "data:,"
     cached = _page_cache.get(path)
     if not cached:
         cached = path.read_text(encoding="utf-8")
         _page_cache[path] = cached
-    return web.Response(text=cached.replace("__BOT_LINK__", bot_link), content_type="text/html")
+    out = cached.replace("__BOT_LINK__", bot_link).replace("__FAVICON_URL__", favicon_url)
+    return web.Response(text=out, content_type="text/html")
 
 
 async def _playlist_nav(file_info):
