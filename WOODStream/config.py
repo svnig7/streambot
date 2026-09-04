@@ -50,3 +50,7 @@ class Server:
     # same behaviour telestream-bot had.
     ENABLE_SUBTITLES = str(env.get("ENABLE_SUBTITLES", "true")).lower() in ("1", "true", "t", "yes", "y") and which("ffmpeg") is not None
     ENABLE_TRACK_PROBE = str(env.get("ENABLE_TRACK_PROBE", "true")).lower() in ("1", "true", "t", "yes", "y") and which("ffprobe") is not None
+
+    # URL of any image to use as the favicon on the web pages (/watch, /xstrm,
+    # /playlist). Leave unset for no favicon.
+    FAVICON_URL = env.get("FAVICON_URL", "")
