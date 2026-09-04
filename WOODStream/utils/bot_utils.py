@@ -91,21 +91,16 @@ def _extra_rows(_id, file_info):
 
 
 def _build_card_text(file_info, file_name, file_size, page_link, stream_link, file_link):
-    """FILE NAME / FILE SIZE / STREAM LINK / DOWNLOAD LINK / FILE LINK card,
-    with the original upload's caption (if any) reproduced above it verbatim
-    instead of the bot inventing its own metadata."""
-    caption_html = file_info.get("caption_html")
-    parts = []
-    if caption_html:
-        parts.append(caption_html)
-    parts.append(
+    """Plain FILE NAME / FILE SIZE / STREAM LINK / DOWNLOAD LINK / FILE LINK
+    card - no caption/metadata prepended (the original caption is preserved
+    separately for the 'Get File' copy, not shown here)."""
+    return (
         f"<b>FILE NAME :</b> <code>{html.escape(file_name)}</code>\n"
         f"<b>FILE SIZE :</b> {file_size}\n"
         f"<b>STREAM LINK :</b> {page_link}\n"
         f"<b>DOWNLOAD LINK :</b> {stream_link}\n"
         f"<b>FILE LINK :</b> {file_link}"
     )
-    return "\n\n".join(parts)
 
 
 async def gen_link(_id):

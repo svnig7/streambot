@@ -185,10 +185,15 @@ async def update_file_id(msg_id, multi_clients):
 
 
 async def send_file(client: Client, db_id, file_id: str, message):
-    """Logs the upload into FLOG_CHANNEL, reproducing its original
-    caption/cover exactly (merged in per user request)."""
+    """Logs the upload into FLOG_CHANNEL by copying the original message
+    directly. .copy() reproduces the exact cover/thumbnail and caption -
+    reconstructing via file_id + an explicit thumb= parameter wasn't
+    reliably preserving custom covers (merged in per user request)."""
+    log_msg = await message.copy(Telegram.FLOG_CHANNEL)
+
     file_info = await db.get_file(db_id)
-    log_msg = await resend_media(client, Telegram.FLOG_CHANNEL, file_info)
+    if not file_info.get("log_msg_id"):
+        await db.set_log_message(db_id, log_msg.id)
 
     if message.chat.type == ChatType.PRIVATE:
         await log_msg.reply_text(
@@ -200,4 +205,23 @@ async def send_file(client: Client, db_id, file_id: str, message):
             disable_web_page_preview=True, parse_mode=ParseMode.MARKDOWN, quote=True)
 
     return log_msg
+
+
+async def copy_stored_file(client: Client, chat_id, file_info: dict, reply_to_message_id=None):
+    """Used by every 'Get File' button. Copies the file's FLOG_CHANNEL log
+    message (which is itself a direct .copy() of the original upload), so
+    the caption and cover/thumbnail always come out identical to what was
+    originally sent - matching telegram's own message.copy() semantics
+    exactly instead of trying to rebuild them from a bare file_id."""
+    log_msg_id = file_info.get("log_msg_id")
+    if log_msg_id:
+        try:
+            source = await client.get_messages(Telegram.FLOG_CHANNEL, log_msg_id)
+            if source and not source.empty:
+                return await source.copy(chat_id=chat_id, reply_to_message_id=reply_to_message_id)
+        except Exception as e:
+            logging.debug(f"Copy from FLOG_CHANNEL failed for a file, falling back: {e}")
+    # Older records that predate log_msg_id, or a channel that's since been
+    # cleared - fall back to the file_id + cover/thumb reconstruction.
+    return await resend_media(client, chat_id, file_info, reply_to_message_id=reply_to_message_id)
 

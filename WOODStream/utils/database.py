@@ -159,6 +159,12 @@ class Database:
     async def set_poster(self, _id, poster_url):
         await self.file.update_one({"_id": ObjectId(_id)}, {"$set": {"poster": poster_url}})
 
+    async def set_log_message(self, _id, msg_id):
+        """Message ID of this file's copy in FLOG_CHANNEL - 'Get File' copies
+        *that* message (rather than reconstructing from file_id) so the
+        cover/thumbnail and caption always match the original exactly."""
+        await self.file.update_one({"_id": ObjectId(_id)}, {"$set": {"log_msg_id": msg_id}})
+
 # ---------------------[ PLAYLISTS (merged in from telestream-bot) ]---------------------#
     async def add_playlist(self, token, name, items, poster=None, exp=None, owner_id=None):
         doc = dict(

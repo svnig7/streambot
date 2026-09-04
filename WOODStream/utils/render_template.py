@@ -13,6 +13,7 @@ async def render_page(db_id):
     file_size = humanbytes(file_data['file_size'])
     file_name = file_data['file_name'].replace("_", " ")
     bot_link = f"https://t.me/{WOODStream.username}"
+    favicon_url = Server.FAVICON_URL or "data:,"
 
     # Video/audio is served by the enhanced /xstrm player instead (see
     # stream_routes.stream_handler, which redirects there before this ever
@@ -30,5 +31,6 @@ async def render_page(db_id):
         file_name=file_name,
         file_url=src,
         file_size=file_size,
-        bot_link=bot_link
+        bot_link=bot_link,
+        favicon_url=favicon_url
     )
