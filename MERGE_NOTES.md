@@ -207,3 +207,37 @@ running an existing streambot deployment as-is.
 - **Log-channel caption font**: `send_file()`'s "Requested by / User ID /
   File ID" (or "Channel ID") text in `WOODStream/utils/file_properties.py`
   switched from the small-caps unicode styling to plain text.
+
+## Round 5: plain link card, copy-based Get File, centered layout, favicon
+
+- **Link card reverted to plain format.** `_build_card_text()` in
+  `WOODStream/utils/bot_utils.py` no longer prepends the original caption -
+  it's just `FILE NAME / FILE SIZE / STREAM LINK / DOWNLOAD LINK /
+  FILE LINK`, matching the reference screenshot exactly. (Round 2 had this
+  prepending the caption; that was a misread of the reference image.)
+- **"Get File" now copies a real logged message instead of reconstructing
+  one.** The Round 3 `cover=`/`thumb=` reconstruction wasn't reliably
+  preserving custom covers in practice. New approach:
+  - `send_file()` (`WOODStream/utils/file_properties.py`) now does
+    `message.copy(Telegram.FLOG_CHANNEL)` on the *original* uploaded
+    message, and stores that copy's message ID as `log_msg_id` on the
+    file's DB record (`Database.set_log_message()`).
+  - New `copy_stored_file()` fetches that logged message and calls
+    `.copy()` on it again for the requester - since both hops are genuine
+    Telegram copies (not file_id + parameter reconstruction), the cover and
+    caption always come out identical to the original upload.
+  - `start.py`'s deep-link `Get File` and `callback.py`'s My Files
+    `Get File` both switched to `copy_stored_file()`. `resend_media()`
+    (the old cover=/thumb= approach) is kept only as a fallback for
+    pre-existing DB records that predate `log_msg_id`.
+- **Watch page layout**: `.topbar` on `watch.html`/`playlist.html` switched
+  from flex to a 3-column grid so the title is genuinely centered (not just
+  left-aligned next to a right-pushed clock); the footer Telegram icon
+  moved from bottom-right to bottom-center. The large "W"/"X" background
+  watermark glyphs (HTML + CSS, including their responsive overrides) were
+  removed from `watch.html`.
+- **Favicon**: new `FAVICON_URL` env var (`Server.FAVICON_URL`, default
+  empty). All three pages now use it - `dl.html` via its normal Jinja
+  render, `watch.html`/`playlist.html` via the same placeholder-swap
+  mechanism as the bot link (`__FAVICON_URL__`), replacing the hardcoded
+  "W" logo favicon that shipped in the ported telestream pages.
