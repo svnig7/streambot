@@ -5,7 +5,7 @@ from WOODStream.bot import WOODStream
 from WOODStream.config import Telegram, Server
 from WOODStream.utils.translation import LANG, BUTTON
 from WOODStream.utils.bot_utils import gen_link
-from WOODStream.utils.file_properties import resend_media
+from WOODStream.utils.file_properties import copy_stored_file
 from WOODStream.utils.database import Database
 from WOODStream.utils.human_readable import humanbytes
 from WOODStream.server.exceptions import FIleNotFound
@@ -92,7 +92,7 @@ async def cb_data(bot, update: CallbackQuery):
         myfile = await db.get_file(usr_cmd[1])
         file_name = myfile['file_name']
         await update.answer(f"sᴇɴᴅɪɴɢ ғɪʟᴇ {file_name}")
-        await resend_media(bot, update.message.chat.id, myfile, reply_to_message_id=update.message.id)
+        await copy_stored_file(bot, update.message.chat.id, myfile, reply_to_message_id=update.message.id)
 
     elif usr_cmd[0] == "refresh" and usr_cmd[1] == "join":
         # Simulate a Message object from the callback message
