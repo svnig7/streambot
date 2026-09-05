@@ -128,10 +128,24 @@ def get_file_info(message):
     }
 
 
+def build_resend_caption(file_info: dict) -> str:
+    """Filename in code format, original metadata caption (if any) in a
+    collapsible blockquote below it - the format used whenever the bot
+    resends a file (Get File, and the FLOG_CHANNEL log copy), independent
+    of whatever entities the source message actually carried. Merged in
+    per user request."""
+    file_name = file_info.get("file_name") or ""
+    parts = [f"<code>{html.escape(file_name)}</code>"]
+    caption_html = file_info.get("caption_html")
+    if caption_html:
+        parts.append(f"<blockquote expandable>{caption_html}</blockquote>")
+    return "\n\n".join(parts)
+
+
 async def resend_media(client: Client, chat_id, file_info: dict, reply_to_message_id=None, caption_override=None):
     """Resends a stored file exactly as it was originally uploaded - same
-    caption, same cover/thumbnail. Used for the 'Get File' buttons and for
-    the FLOG_CHANNEL log copy.
+    caption, same cover/thumbnail. Used as a fallback when a file predates
+    log_msg_id (see copy_stored_file below).
 
     Tries the newer `cover=` parameter first (Bot API's dedicated video
     cover), then falls back to the classic `thumb=` parameter, mirroring the
@@ -142,8 +156,7 @@ async def resend_media(client: Client, chat_id, file_info: dict, reply_to_messag
     file_id = file_info["file_id"]
     kind = file_info.get("kind")
     cover = file_info.get("cover_file_id")
-    caption_html = caption_override if caption_override is not None else file_info.get("caption_html")
-    caption = caption_html if caption_html else f"<b>{html.escape(file_info.get('file_name') or '')}</b>"
+    caption = caption_override if caption_override is not None else build_resend_caption(file_info)
 
     base = dict(chat_id=chat_id, caption=caption, parse_mode=ParseMode.HTML)
     if reply_to_message_id:
@@ -186,12 +199,16 @@ async def update_file_id(msg_id, multi_clients):
 
 async def send_file(client: Client, db_id, file_id: str, message):
     """Logs the upload into FLOG_CHANNEL by copying the original message
-    directly. .copy() reproduces the exact cover/thumbnail and caption -
+    directly - .copy() reproduces the exact cover/thumbnail, which
     reconstructing via file_id + an explicit thumb= parameter wasn't
-    reliably preserving custom covers (merged in per user request)."""
-    log_msg = await message.copy(Telegram.FLOG_CHANNEL)
-
+    reliably preserving. The caption is overridden with the standard
+    code-filename + collapsible-blockquote format rather than whatever
+    entities the original happened to carry, so it's consistent everywhere
+    the file gets resent (merged in per user request)."""
     file_info = await db.get_file(db_id)
+    caption = build_resend_caption(file_info)
+    log_msg = await message.copy(Telegram.FLOG_CHANNEL, caption=caption, parse_mode=ParseMode.HTML)
+
     if not file_info.get("log_msg_id"):
         await db.set_log_message(db_id, log_msg.id)
 
@@ -209,19 +226,21 @@ async def send_file(client: Client, db_id, file_id: str, message):
 
 async def copy_stored_file(client: Client, chat_id, file_info: dict, reply_to_message_id=None):
     """Used by every 'Get File' button. Copies the file's FLOG_CHANNEL log
-    message (which is itself a direct .copy() of the original upload), so
-    the caption and cover/thumbnail always come out identical to what was
-    originally sent - matching telegram's own message.copy() semantics
-    exactly instead of trying to rebuild them from a bare file_id."""
+    message (which is itself a direct .copy() of the original upload, with
+    the caption already overridden - see send_file above), so the cover and
+    caption always come out identical to what was originally sent."""
+    caption = build_resend_caption(file_info)
     log_msg_id = file_info.get("log_msg_id")
     if log_msg_id:
         try:
             source = await client.get_messages(Telegram.FLOG_CHANNEL, log_msg_id)
             if source and not source.empty:
-                return await source.copy(chat_id=chat_id, reply_to_message_id=reply_to_message_id)
+                return await source.copy(chat_id=chat_id, caption=caption, parse_mode=ParseMode.HTML,
+                                          reply_to_message_id=reply_to_message_id)
         except Exception as e:
             logging.debug(f"Copy from FLOG_CHANNEL failed for a file, falling back: {e}")
     # Older records that predate log_msg_id, or a channel that's since been
     # cleared - fall back to the file_id + cover/thumb reconstruction.
-    return await resend_media(client, chat_id, file_info, reply_to_message_id=reply_to_message_id)
+    return await resend_media(client, chat_id, file_info, reply_to_message_id=reply_to_message_id,
+                               caption_override=caption)
 
