@@ -241,3 +241,26 @@ running an existing streambot deployment as-is.
   render, `watch.html`/`playlist.html` via the same placeholder-swap
   mechanism as the bot link (`__FAVICON_URL__`), replacing the hardcoded
   "W" logo favicon that shipped in the ported telestream pages.
+
+## Round 6: dropped the "W" logo icon, fixed resend caption formatting
+
+- **"W" logo icon removed** from the topbar of `watch.html` and
+  `playlist.html` (the small rounded-square swoosh icon next to the
+  title). The topbar grid went from 3 columns (`icon | title | now`) to a
+  symmetric `1fr auto 1fr` with the title explicitly placed in the middle
+  column (`grid-column: 2`) and the clock in the last, so the title stays
+  genuinely centered with the icon gone rather than drifting left.
+- **Resend caption format fixed.** Copying the original message
+  (`.copy()`, Round 5) reliably preserves the cover/thumbnail, but doesn't
+  reliably preserve blockquote/expandable formatting from the source
+  caption - it was coming through as plain text. Every resend now
+  explicitly builds its own caption instead of trusting the copied
+  entities:
+  - New `build_resend_caption()` in `WOODStream/utils/file_properties.py`:
+    the filename in `<code>` format, then (if the upload had a caption)
+    the original metadata wrapped in `<blockquote expandable>...</blockquote>`
+    - a real collapsible quote block, not just plain lines.
+  - `send_file()` passes this as `caption=` when copying into
+    `FLOG_CHANNEL`, and `copy_stored_file()`/`resend_media()` do the same
+    for the requester's copy - so the FLOG_CHANNEL log, "Get File" via deep
+    link, and "Get File" from My Files all produce the identical format now.
