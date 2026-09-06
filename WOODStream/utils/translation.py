@@ -5,7 +5,7 @@ class LANG(object):
 
     START_TEXT = """
 <b>👋 Hey, </b>{}\n 
-<b>I'm a Telegram file stream bot as well as a direct link generator bot.</b>\n
+<b>I'm a Telegram File Stream Bot as well as a Direct Link Generator Bot.</b>\n
 <b>Working on channels and private chats.</b>"""
 
     HELP_TEXT = """
@@ -18,26 +18,26 @@ class LANG(object):
 <b>🔞 Adult content strictly prohibited.</b>"""
 
     ABOUT_TEXT = """
-<b>⚜ My name : {}</b>\n
-<b>✦ Version : {}</b>
-<b>✦ Owner : <a href='https://telegram.me/cntct_7bot'>❖ SVN ❖ ™</a></b>\n
+<b>⚜ My Name: {}</b>\n
+<b>✦ Version: {}</b>
+<b>✦ Owner: <a href='https://t.me/stremio_updates'>❖ Stremio Updates❖ ™</a></b>\n
 """
 
     STREAM_TEXT = """
-<b>File name :</b> <code>{}</code>
-<b>File size :</b> <code>{}</code>
-<b>Stream link :</b> <code>{}</code>
-<b>Download link :</b> <code>{}</code>
-<b>File link :</b> <code>{}</code>"""
+<b>File Name:</b> <code>{}</code>
+<b>File Size:</b> <code>{}</code>
+<b>Stream Link:</b> <code>{}</code>
+<b>Download Link:</b> <code>{}</code>
+<b>File Link:</b> <code>{}</code>"""
 
     STREAM_TEXT_X = """
-<b>File name :</b> <code>{}</code>
-<b>File size :</b> <code>{}</code>
-<b>Stream link :</b> <code>{}</code>
-<b>Download link :</b> <code>{}</code>
-<b>File link :</b> <code>{}</code>"""
+<b>File Name:</b> <code>{}</code>
+<b>File Size:</b> <code>{}</code>
+<b>Stream Link:</b> <code>{}</code>
+<b>Download Link:</b> <code>{}</code>
+<b>File Link:</b> <code>{}</code>"""
 
-    BAN_TEXT = "Sorry, you are banned from using me.\n\n**[Contact dev](tg://user?id={}) - they will help you.**"
+    BAN_TEXT = "Sorry, you are banned from using me.\n\n**[Contact Dev](tg://user?id={}) - they will help you.**"
 
 class BUTTON(object):
     START_BUTTONS = InlineKeyboardMarkup(
@@ -57,17 +57,15 @@ class BUTTON(object):
         [[
             InlineKeyboardButton('Home', callback_data='home'),
             InlineKeyboardButton('About', callback_data='about'),
-            InlineKeyboardButton('Close', callback_data='close'),
         ],
-            [InlineKeyboardButton("Update Channel", url=f'https://t.me/{Telegram.UPDATES_CHANNEL}')]
+            [InlineKeyboardButton('Close', callback_data='close')]
         ]
     )
     ABOUT_BUTTONS = InlineKeyboardMarkup(
         [[
             InlineKeyboardButton('Home', callback_data='home'),
             InlineKeyboardButton('Help', callback_data='help'),
-            InlineKeyboardButton('Close', callback_data='close'),
         ],
-            [InlineKeyboardButton("Update Channel", url=f'https://t.me/{Telegram.UPDATES_CHANNEL}')]
+            [InlineKeyboardButton('Close', callback_data='close')]
         ]
     )
