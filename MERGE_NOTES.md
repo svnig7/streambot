@@ -264,3 +264,23 @@ running an existing streambot deployment as-is.
     `FLOG_CHANNEL`, and `copy_stored_file()`/`resend_media()` do the same
     for the requester's copy - so the FLOG_CHANNEL log, "Get File" via deep
     link, and "Get File" from My Files all produce the identical format now.
+
+## Round 7: playlist file-in-Telegram button, HTML autoescape, plain caption again
+
+- **"Get file in Telegram" button on the playlist page.** `watch.html`
+  already had one (`#tgfile`, wired to `/file/{token}`) from the original
+  ported page - it just wasn't obvious. `playlist.html` had the CSS for a
+  `.tg` button already sitting unused in its stylesheet (clearly the
+  original design intended one), so this just adds the actual button:
+  each grid item now has a small Telegram-paper-plane icon next to its
+  download icon, linking to `/file/{item.token}`.
+- **HTML escaping fixed on `/dl` (`dl.html`).** `render_page()` was using
+  `jinja2.Template(source)` with no `autoescape` - Jinja2 does not
+  autoescape by default outside of an `Environment(autoescape=True)`, so a
+  filename containing `<`, `>`, or `&` would have been inserted into the
+  page as raw HTML instead of literal text. Now
+  `jinja2.Template(source, autoescape=True)`.
+- **Caption formatting reverted.** The `<code>`/`<blockquote expandable>`
+  wrapping added in Round 6 is gone; `build_resend_caption()` is back to
+  plain text - the (HTML-escaped) filename followed by the original
+  caption, no forced formatting.
