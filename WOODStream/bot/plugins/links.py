@@ -24,24 +24,24 @@ async def _resolve_target(message: Message):
     reply = message.reply_to_message
     if not reply:
         await message.reply_text(
-            "**ʀᴇᴘʟʏ ᴛᴏ ᴏɴᴇ ᴏғ ᴍʏ ʟɪɴᴋ ᴍᴇssᴀɢᴇs ᴡɪᴛʜ ᴛʜɪs ᴄᴏᴍᴍᴀɴᴅ**",
+            "**Reply to one of my link messages with this command**",
             quote=True,
         )
         return None
     file_id = file_id_from_message(reply)
     if not file_id:
         await message.reply_text(
-            "**ᴄᴏᴜʟᴅɴ'ᴛ ғɪɴᴅ ᴀ ʟɪɴᴋ ɪɴ ᴛʜᴀᴛ ᴍᴇssᴀɢᴇ**",
+            "**Couldn't find a link in that message**",
             quote=True,
         )
         return None
     try:
         file_info = await db.get_file(file_id)
     except FIleNotFound:
-        await message.reply_text("**ғɪʟᴇ ɴᴏᴛ ғᴏᴜɴᴅ (ᴀʟʀᴇᴀᴅʏ ᴅᴇʟᴇᴛᴇᴅ ᴏʀ ᴇxᴘɪʀᴇᴅ)**", quote=True)
+        await message.reply_text("**File not found (already deleted or expired)**", quote=True)
         return None
     if not _is_owner(file_info, message):
-        await message.reply_text("**ᴏɴʟʏ ᴛʜᴇ ᴜᴘʟᴏᴀᴅᴇʀ (ᴏʀ ᴏᴡɴᴇʀ) ᴄᴀɴ ᴄʜᴀɴɢᴇ ᴛʜɪs**", quote=True)
+        await message.reply_text("**Only the uploader (or owner) can change this**", quote=True)
         return None
     return file_id, file_info
 
@@ -56,13 +56,13 @@ async def set_ttl(bot: Client, message: Message):
     arg = message.command[1] if len(message.command) > 1 else ""
     if arg.strip().lower() in ("0", "off", "none", "clear"):
         await db.set_ttl(file_id, None)
-        await message.reply_text("**ᴛᴛʟ ʀᴇᴍᴏᴠᴇᴅ, ʟɪɴᴋ ᴡᴏɴ'ᴛ ᴇxᴘɪʀᴇ**", quote=True)
+        await message.reply_text("**TTL removed, link won't expire**", quote=True)
         return
 
     seconds = parse_duration(arg)
     if seconds <= 0:
         await message.reply_text(
-            "**ᴜsᴀɢᴇ :** `/ttl 1d2h` (ᴅ/ʜ/ᴍ/s) ᴏʀ `/ttl off` ᴛᴏ ʀᴇᴍᴏᴠᴇ ᴀɴ ᴇxɪsᴛɪɴɢ ᴛᴛʟ",
+            "**Usage:** `/ttl 1d2h` (d/h/m/s) or `/ttl off` to remove an existing TTL",
             quote=True,
         )
         return
@@ -70,7 +70,7 @@ async def set_ttl(bot: Client, message: Message):
     exp = time.time() + seconds
     await db.set_ttl(file_id, exp)
     await message.reply_text(
-        f"**ʟɪɴᴋ ᴡɪʟʟ ᴇxᴘɪʀᴇ ɪɴ** `{get_readable_time(seconds)}`",
+        f"**Link will expire in** `{get_readable_time(seconds)}`",
         quote=True,
     )
 
@@ -83,12 +83,12 @@ async def set_poster(bot: Client, message: Message):
     file_id, file_info = target
 
     if len(message.command) < 2:
-        await message.reply_text("**ᴜsᴀɢᴇ :** `/poster https://image.url`", quote=True)
+        await message.reply_text("**Usage:** `/poster https://image.url`", quote=True)
         return
     url = message.command[1]
     if not url.lower().startswith(("http://", "https://")):
-        await message.reply_text("**ᴛʜᴀᴛ ᴅᴏᴇsɴ'ᴛ ʟᴏᴏᴋ ʟɪᴋᴇ ᴀ ᴠᴀʟɪᴅ ɪᴍᴀɢᴇ ᴜʀʟ**", quote=True)
+        await message.reply_text("**That doesn't look like a valid image URL**", quote=True)
         return
 
     await db.set_poster(file_id, url)
-    await message.reply_text("**ᴄᴏᴠᴇʀ ᴀʀᴛ ᴜᴘᴅᴀᴛᴇᴅ**", quote=True)
+    await message.reply_text("**Cover art updated**", quote=True)

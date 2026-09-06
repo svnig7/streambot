@@ -21,10 +21,10 @@ broadcast_ids = {}
 
 @WOODStream.on_message(filters.command("status") & filters.private & filters.user(Telegram.OWNER_ID))
 async def sts(c: Client, m: Message):
-    await m.reply_text(text=f"""**ᴛᴏᴛᴀʟ ᴜsᴇʀs ɪɴ ᴅʙ :** `{await db.total_users_count()}`
-**ʙᴀɴɴᴇᴅ ᴜsᴇʀs ɪɴ ᴅʙ :** `{await db.total_banned_users_count()}`
-**ᴛᴏᴛᴀʟ ʟɪɴᴋs ɢᴇɴᴇʀᴀᴛᴇᴅ : ** `{await db.total_files()}`
-**ᴛᴏᴛᴀʟ ᴘʟᴀʏʟɪsᴛs : ** `{await db.playlist.count_documents({})}`"""
+    await m.reply_text(text=f"""**Total users in DB:** `{await db.total_users_count()}`
+**Banned users in DB:** `{await db.total_banned_users_count()}`
+**Total links generated:** `{await db.total_files()}`
+**Total playlists:** `{await db.playlist.count_documents({})}`"""
                        , parse_mode=ParseMode.MARKDOWN, quote=True)
 
 
@@ -35,18 +35,18 @@ async def sts(b, m: Message):
         try:
             await db.ban_user(int(id))
             await db.delete_user(int(id))
-            await m.reply_text(text=f"`{id}`** ɪs ʙᴀɴɴᴇᴅ** ", parse_mode=ParseMode.MARKDOWN, quote=True)
+            await m.reply_text(text=f"`{id}`** is banned.**", parse_mode=ParseMode.MARKDOWN, quote=True)
             if not str(id).startswith('-100'):
                 await b.send_message(
                     chat_id=id,
-                    text="**ʏᴏᴜ ᴀʀᴇ ʙᴀɴɴᴇᴅ ᴛᴏ ᴜsᴇ ᴛʜᴇ ʙᴏᴛ**",
+                    text="**You are banned from using the bot.**",
                     parse_mode=ParseMode.MARKDOWN,
                     disable_web_page_preview=True
                 )
         except Exception as e:
-            await m.reply_text(text=f"**sᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ : {e}** ", parse_mode=ParseMode.MARKDOWN, quote=True)
+            await m.reply_text(text=f"**Something went wrong: {e}**", parse_mode=ParseMode.MARKDOWN, quote=True)
     else:
-        await m.reply_text(text=f"`{id}`** ɪs ᴀʟʀᴇᴀᴅʏ ʙᴀɴɴᴇᴅ** ", parse_mode=ParseMode.MARKDOWN, quote=True)
+        await m.reply_text(text=f"`{id}`** is already banned.**", parse_mode=ParseMode.MARKDOWN, quote=True)
 
 
 @WOODStream.on_message(filters.command("unban") & filters.private & filters.user(Telegram.OWNER_ID))
@@ -55,18 +55,18 @@ async def sts(b, m: Message):
     if await db.is_user_banned(int(id)):
         try:
             await db.unban_user(int(id))
-            await m.reply_text(text=f"`{id}`** ɪs ᴜɴʙᴀɴɴᴇᴅ** ", parse_mode=ParseMode.MARKDOWN, quote=True)
+            await m.reply_text(text=f"`{id}`** is unbanned.**", parse_mode=ParseMode.MARKDOWN, quote=True)
             if not str(id).startswith('-100'):
                 await b.send_message(
                     chat_id=id,
-                    text="**ʏᴏᴜ ᴀʀᴇ ᴜɴʙᴀɴɴᴇᴅ, ɴᴏᴡ ʏᴏᴜ ᴄᴀɴ ᴜsᴇ ᴛʜᴇ ʙᴏᴛ**",
+                    text="**You are unbanned, you can use the bot again.**",
                     parse_mode=ParseMode.MARKDOWN,
                     disable_web_page_preview=True
                 )
         except Exception as e:
-            await m.reply_text(text=f"** sᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ : {e}**", parse_mode=ParseMode.MARKDOWN, quote=True)
+            await m.reply_text(text=f"**Something went wrong: {e}**", parse_mode=ParseMode.MARKDOWN, quote=True)
     else:
-        await m.reply_text(text=f"`{id}`** ɪs ɴᴏᴛ ʙᴀɴɴᴇᴅ** ", parse_mode=ParseMode.MARKDOWN, quote=True)
+        await m.reply_text(text=f"`{id}`** is not banned.**", parse_mode=ParseMode.MARKDOWN, quote=True)
 
 
 @WOODStream.on_message(filters.command("broadcast") & filters.private & filters.user(Telegram.OWNER_ID) & filters.reply)
@@ -78,7 +78,7 @@ async def broadcast_(c, m):
         if not broadcast_ids.get(broadcast_id):
             break
     out = await m.reply_text(
-        text=f"ʙʀᴏᴀᴅᴄᴀsᴛ ɪɴɪᴛɪᴀᴛᴇᴅ ! ʏᴏᴜ ᴡɪʟʟ ʙᴇ ɴᴏᴛɪғɪᴇᴅ ᴡɪᴛʜ ʟᴏɢ ғɪʟᴇ ᴡʜᴇɴ ᴀʟʟ ᴛʜᴇ ᴜsᴇʀs ᴀʀᴇ ɴᴏᴛɪғɪᴇᴅ."
+        text=f"Broadcast initiated! You will be notified with the log file once all users are notified."
     )
     start_time = time.time()
     total_users = await db.total_users_count()
@@ -117,7 +117,7 @@ async def broadcast_(c, m):
                     )
                 )
                 try:
-                    await out.edit_text(f"ʙʀᴏᴀᴅᴄᴀsᴛ sᴛᴀᴛᴜs\n\nᴄᴜʀʀᴇɴᴛ : {done}\nғᴀɪʟᴇᴅ : {failed}\nsᴜᴄᴄᴇss : {success}")
+                    await out.edit_text(f"Broadcast status\n\nCurrent: {done}\nFailed: {failed}\nSuccess: {success}")
                 except:
                     pass
     if broadcast_ids.get(broadcast_id):
@@ -127,13 +127,13 @@ async def broadcast_(c, m):
     await out.delete()
     if failed == 0:
         await m.reply_text(
-            text=f"ʙʀᴏᴀᴅᴄᴀsᴛ ᴄᴏᴍᴘʟᴇᴛᴇᴅ ɪɴ `{completed_in}`\n\nᴛᴏᴛᴀʟ ᴜsᴇʀs : {total_users}\nᴛᴏᴛᴀʟ ᴅᴏɴᴇ : {done}\n{success} sᴜᴄᴄᴇss ᴀɴᴅ {failed} ғᴀɪʟᴇᴅ.",
+            text=f"Broadcast completed in `{completed_in}`\n\nTotal users: {total_users}\nTotal done: {done}\n{success} success and {failed} failed.",
             quote=True
         )
     else:
         await m.reply_document(
             document='broadcast.txt',
-            caption=f"ʙʀᴏᴀᴅᴄᴀsᴛ ᴄᴏᴍᴘʟᴇᴛᴇᴅ ɪɴ `{completed_in}`\n\nᴛᴏᴛᴀʟ ᴜsᴇʀs : {total_users}\nᴛᴏᴛᴀʟ ᴅᴏɴᴇ : {done}\n{success} sᴜᴄᴄᴇss ᴀɴᴅ {failed} ғᴀɪʟᴇᴅ.",
+            caption=f"Broadcast completed in `{completed_in}`\n\nTotal users: {total_users}\nTotal done: {done}\n{success} success and {failed} failed.",
             quote=True
         )
     os.remove('broadcast.txt')
@@ -146,14 +146,14 @@ async def sts(c: Client, m: Message):
         file_info = await db.get_file(file_id)
     except FIleNotFound:
         await m.reply_text(
-            text=f"**ғɪʟᴇ ᴀʟʀᴇᴀᴅʏ ᴅᴇʟᴇᴛᴇᴅ**",
+            text=f"**File already deleted**",
             quote=True
         )
         return
     await db.delete_one_file(file_info['_id'])
     await db.count_links(file_info['user_id'], "-")
     await m.reply_text(
-        text=f"**ғɪʟᴇ ᴅᴇʟᴇᴛᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ !** ",
+        text=f"**File deleted successfully!**",
         quote=True
     )
 

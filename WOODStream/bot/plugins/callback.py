@@ -49,8 +49,8 @@ async def cb_data(bot, update: CallbackQuery):
         
     elif usr_cmd[0] == "msgdelete":
         await update.message.edit_caption(
-        caption= "**ᴄᴏɴғɪʀᴍ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜᴇ ғɪʟᴇ**\n\n",
-        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ʏᴇs", callback_data=f"msgdelyes_{usr_cmd[1]}_{usr_cmd[2]}"), InlineKeyboardButton("ɴᴏ", callback_data=f"myfile_{usr_cmd[1]}_{usr_cmd[2]}")]])
+        caption= "**Confirm you want to delete the file**\n\n",
+        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Yes", callback_data=f"msgdelyes_{usr_cmd[1]}_{usr_cmd[2]}"), InlineKeyboardButton("No", callback_data=f"myfile_{usr_cmd[1]}_{usr_cmd[2]}")]])
     )
         
     elif usr_cmd[0] == "msgdelyes":
@@ -59,8 +59,8 @@ async def cb_data(bot, update: CallbackQuery):
         
     elif usr_cmd[0] == "msgdelpvt":
         await update.message.edit_caption(
-        caption= "**ᴄᴏɴғɪʀᴍ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜᴇ ғɪʟᴇ**\n\n",
-        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ʏᴇs", callback_data=f"msgdelpvtyes_{usr_cmd[1]}"), InlineKeyboardButton("ɴᴏ", callback_data=f"mainstream_{usr_cmd[1]}")]])
+        caption= "**Confirm you want to delete the file**\n\n",
+        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Yes", callback_data=f"msgdelpvtyes_{usr_cmd[1]}"), InlineKeyboardButton("No", callback_data=f"mainstream_{usr_cmd[1]}")]])
     )
         
     elif usr_cmd[0] == "msgdelpvtyes":
@@ -91,7 +91,7 @@ async def cb_data(bot, update: CallbackQuery):
     elif usr_cmd[0] == "sendfile":
         myfile = await db.get_file(usr_cmd[1])
         file_name = myfile['file_name']
-        await update.answer(f"sᴇɴᴅɪɴɢ ғɪʟᴇ {file_name}")
+        await update.answer(f"Sending file {file_name}")
         await copy_stored_file(bot, update.message.chat.id, myfile, reply_to_message_id=update.message.id)
 
     elif usr_cmd[0] == "refresh" and usr_cmd[1] == "join":
@@ -103,11 +103,11 @@ async def cb_data(bot, update: CallbackQuery):
         from WOODStream.utils.bot_utils import is_user_joined
         if await is_user_joined(bot, fake_msg):
             await update.message.edit_text(
-                text="✅ ʏᴏᴜ ʜᴀᴠᴇ ᴊᴏɪɴᴇᴅ ʀᴇǫᴜɪʀᴇᴅ ᴄʜᴀɴɴᴇʟ & ɢʀᴏᴜᴘ.\n\nᴘʟᴇᴀsᴇ ʀᴜɴ /start ᴀɢᴀɪɴ.",
+                text="✅ you have joined required channel & group.\n\nplease run /start again.",
                 parse_mode=ParseMode.MARKDOWN
             )
         else:
-            await update.answer("❗ sᴛɪʟʟ ɴᴏᴛ ᴊᴏɪɴᴇᴅ", show_alert=True)
+            await update.answer("❗ still not joined", show_alert=True)
 
 
 
@@ -129,15 +129,15 @@ async def gen_file_list_button(file_list_no: int, user_id: int):
         
     if not file_list:
         file_list.append(
-                [InlineKeyboardButton("ᴇᴍᴘᴛʏ", callback_data="N/A")])
-    file_list.append([InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="close")])
+                [InlineKeyboardButton("Empty", callback_data="N/A")])
+    file_list.append([InlineKeyboardButton("Close", callback_data="close")])
     return file_list, total_files
 
 async def gen_file_menu(_id, file_list_no, update: CallbackQuery):
     try:
         myfile_info=await db.get_file(_id)
     except FIleNotFound:
-        await update.answer("ғɪʟᴇ ɴᴏᴛ ғᴏᴜɴᴅ")
+        await update.answer("File not found")
         return
 
     file_id=FileId.decode(myfile_info['file_id'])
@@ -185,7 +185,7 @@ async def gen_file_menu(_id, file_list_no, update: CallbackQuery):
     if type(TiMe) == float:
         date = datetime.datetime.fromtimestamp(TiMe)
     await update.edit_message_caption(
-        caption="**ғɪʟᴇ ɴᴀᴍᴇ :** `{}`\n**ғɪʟᴇ sɪᴢᴇ :** `{}`\n**ғɪʟᴇ ᴛʏᴘᴇ :** `{}`\n**ᴄʀᴇᴀᴛᴇᴅ ᴏɴ :** `{}`".format(myfile_info['file_name'],
+        caption="**File name:** `{}`\n**File size:** `{}`\n**File type:** `{}`\n**Created on:** `{}`".format(myfile_info['file_name'],
                                                                                                                     humanbytes(int(myfile_info['file_size'])),
                                                                                                                     file_type,
                                                                                                                     TiMe if isinstance(TiMe,str) else date.date()),
@@ -196,26 +196,26 @@ async def delete_user_file(_id, file_list_no: int, update:CallbackQuery):
     try:
         myfile_info=await db.get_file(_id)
     except FIleNotFound:
-        await update.answer("ғɪʟᴇ ᴀʟʀᴇᴀᴅʏ ᴅᴇʟᴇᴛᴇᴅ")
+        await update.answer("File already deleted")
         return
 
     await db.delete_one_file(myfile_info['_id'])
     await db.count_links(update.from_user.id, "-")
     await update.message.edit_caption(
-            caption= "**ғɪʟᴇ ᴅᴇʟᴇᴛᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ !**" + update.message.caption.replace("ᴄᴏɴғɪʀᴍ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜᴇ ғɪʟᴇ", ""),
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ʙᴀᴄᴋ", callback_data=f"userfiles_1")]])
+            caption= "**File deleted successfully!**" + update.message.caption.replace("Confirm you want to delete the file", ""),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Back", callback_data=f"userfiles_1")]])
         )
 
 async def delete_user_filex(_id, update:CallbackQuery):
     try:
         myfile_info=await db.get_file(_id)
     except FIleNotFound:
-        await update.answer("ғɪʟᴇ ᴀʟʀᴇᴀᴅʏ ᴅᴇʟᴇᴛᴇᴅ")
+        await update.answer("File already deleted")
         return
 
     await db.delete_one_file(myfile_info['_id'])
     await db.count_links(update.from_user.id, "-")
     await update.message.edit_caption(
-            caption= "**ғɪʟᴇ ᴅᴇʟᴇᴛᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ !**\n\n",
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data=f"close")]])
+            caption= "**File deleted successfully!**\n\n",
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Close", callback_data=f"close")]])
         )
