@@ -129,16 +129,14 @@ def get_file_info(message):
 
 
 def build_resend_caption(file_info: dict) -> str:
-    """Filename in code format, original metadata caption (if any) in a
-    collapsible blockquote below it - the format used whenever the bot
-    resends a file (Get File, and the FLOG_CHANNEL log copy), independent
-    of whatever entities the source message actually carried. Merged in
-    per user request."""
+    """Filename plus the original metadata caption (if any), used whenever
+    the bot resends a file (Get File, and the FLOG_CHANNEL log copy) -
+    plain text, no forced code/blockquote formatting."""
     file_name = file_info.get("file_name") or ""
-    parts = [f"<code>{html.escape(file_name)}</code>"]
+    parts = [html.escape(file_name)]
     caption_html = file_info.get("caption_html")
     if caption_html:
-        parts.append(f"<blockquote expandable>{caption_html}</blockquote>")
+        parts.append(caption_html)
     return "\n\n".join(parts)
 
 
