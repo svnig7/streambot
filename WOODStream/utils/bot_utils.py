@@ -64,7 +64,7 @@ async def is_user_joined(bot, message: Message):
             return False
         except Exception:
             await message.reply_text(
-                text=f"⚠️ Error. Contact <a href='https://t.me/cntct_7bot'>developer</a>",
+                text=f"⚠️ Error. Contact <a href='https://t.me/contact_7_7bot'>Contact Here</a>",
                 parse_mode=ParseMode.HTML,
                 disable_web_page_preview=True
             )
@@ -95,11 +95,11 @@ def _build_card_text(file_info, file_name, file_size, page_link, stream_link, fi
     card - no caption/metadata prepended (the original caption is preserved
     separately for the 'Get File' copy, not shown here)."""
     return (
-        f"<b>FILE NAME :</b> <code>{html.escape(file_name)}</code>\n"
-        f"<b>FILE SIZE :</b> {file_size}\n"
-        f"<b>STREAM LINK :</b> {page_link}\n"
-        f"<b>DOWNLOAD LINK :</b> {stream_link}\n"
-        f"<b>FILE LINK :</b> {file_link}"
+        f"<b>File Name:</b> <code>{html.escape(file_name)}</code>\n"
+        f"<b>File Size:</b> <code>{file_size}</code>\n"
+        f"<b>Stream Link:</b> <code>{page_link}</code>\n"
+        f"<b>Download Link:</b> <code>{stream_link}</code>\n"
+        f"<b>File Link:</b> <code>{file_link}</code>"
     )
 
 
@@ -120,19 +120,19 @@ async def gen_link(_id):
     if "video" in mime_type or "audio" in mime_type:
         reply_markup = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("STREAM", url=player_link), InlineKeyboardButton("DOWNLOAD", url=stream_link)],
-                [InlineKeyboardButton("GET FILE", url=file_link), InlineKeyboardButton("REVOKE", callback_data=f"msgdelpvt_{_id}")],
+                [InlineKeyboardButton("Stream", url=player_link), InlineKeyboardButton("Download", url=stream_link)],
+                [InlineKeyboardButton("Get File", url=file_link), InlineKeyboardButton("Revoke", callback_data=f"msgdelpvt_{_id}")],
                 *_extra_rows(_id, file_info),
-                [InlineKeyboardButton("CLOSE", callback_data="close")]
+                [InlineKeyboardButton("Close", callback_data="close")]
             ]
         )
     else:
         reply_markup = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("DOWNLOAD", url=stream_link)],
-                [InlineKeyboardButton("GET FILE", url=file_link), InlineKeyboardButton("REVOKE", callback_data=f"msgdelpvt_{_id}")],
+                [InlineKeyboardButton("Download", url=stream_link)],
+                [InlineKeyboardButton("Get File", url=file_link), InlineKeyboardButton("Revoke", callback_data=f"msgdelpvt_{_id}")],
                 *_extra_rows(_id, file_info),
-                [InlineKeyboardButton("CLOSE", callback_data="close")]
+                [InlineKeyboardButton("Close", callback_data="close")]
             ]
         )
     return reply_markup, stream_text
@@ -156,16 +156,16 @@ async def gen_linkx(m:Message , _id, name: list):
     if "video" in mime_type or "audio" in mime_type:
         reply_markup = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("STREAM", url=player_link), InlineKeyboardButton("DOWNLOAD", url=stream_link)],
-                [InlineKeyboardButton("GET FILE", url=file_link)],
+                [InlineKeyboardButton("Stream", url=player_link), InlineKeyboardButton("Download", url=stream_link)],
+                [InlineKeyboardButton("Get File", url=file_link)],
                 *_extra_rows(_id, file_info),
             ]
         )
     else:
         reply_markup = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("DOWNLOAD", url=stream_link)],
-                [InlineKeyboardButton("GET FILE", url=file_link)],
+                [InlineKeyboardButton("Download", url=stream_link)],
+                [InlineKeyboardButton("Get File", url=file_link)],
                 *_extra_rows(_id, file_info),
             ]
         )
@@ -180,14 +180,14 @@ async def gen_playlist_link(token):
     name = doc["name"] if doc else "Playlist"
     count = len(doc["items"]) if doc else 0
     text = (
-        f"<b>PLAYLIST :</b> {name}\n"
-        f"<b>FILES :</b> {count}\n"
-        f"<b>PLAYLIST LINK :</b> {playlist_link}"
+        f"<b>Playlist:</b> <code>{name}</code>\n"
+        f"<b>Files:</b> <code>{count}</code>\n"
+        f"<b>Playlist Link:</b> <code>{playlist_link}</code>"
     )
     reply_markup = InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton("OPEN PLAYLIST", url=playlist_link)],
-            [InlineKeyboardButton("CLOSE", callback_data="close")]
+            [InlineKeyboardButton("Open Playlist", url=playlist_link)],
+            [InlineKeyboardButton("Close", callback_data="close")]
         ]
     )
     return reply_markup, text
@@ -265,7 +265,7 @@ async def is_user_exist(bot, message):
         await db.add_user(message.from_user.id)
         await bot.send_message(
             Telegram.ULOG_CHANNEL,
-            f"**#newuser**\n**⬩ user name :** [{message.from_user.first_name}](tg://user?id={message.from_user.id})\n**⬩ user id :** `{message.from_user.id}`"
+            f"**#newuser**\n**⬩ User Name:** [{message.from_user.first_name}](tg://user?id={message.from_user.id})\n**⬩ User Id:** `{message.from_user.id}`"
         )
 
 async def is_channel_exist(bot, message):
@@ -274,7 +274,7 @@ async def is_channel_exist(bot, message):
         members = await bot.get_chat_members_count(message.chat.id)
         await bot.send_message(
             Telegram.ULOG_CHANNEL,
-            f"**#newchannel** \n**⬩ chat name :** `{message.chat.title}`\n**⬩ chat id :** `{message.chat.id}`\n**⬩ total members :** `{members}`"
+            f"**#newchannel** \n**⬩ Chat Name:** `{message.chat.title}`\n**⬩ Chat ID:** `{message.chat.id}`\n**⬩ Total Members:** `{members}`"
         )
 
 async def verify_user(bot, message):
