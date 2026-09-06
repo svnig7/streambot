@@ -1114,6 +1114,13 @@
                         </svg>
                         Download
                     </a>
+                    <a class="btn icon" id="tgfile" href="#" target="_blank" rel="noopener" title="Get file in Telegram"
+                        aria-label="Get file in Telegram">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M21.94 3.63a1.6 1.6 0 0 0-1.66-.2L2.4 10.6a1.53 1.53 0 0 0 .1 2.87l4.5 1.42 1.74 5.6a1.5 1.5 0 0 0 2.47.6l2.5-2.3 4.4 3.24a1.55 1.55 0 0 0 2.45-.93l3.36-15.6a1.6 1.6 0 0 0-.98-1.87ZM9.3 14.9l-1.1 3.5-1.05-3.4 10.9-8.05Zm2.02 2.55-.9-.66 8.35-8.7-9.7 8.6-.03.03Z" />
+                        </svg>
+                    </a>
                     <button class="btn icon" type="button" id="lights" title="Turn the lights off"
                         aria-label="Turn the lights off" aria-pressed="false">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -1576,6 +1583,7 @@
             var STREAM = location.origin + "/stream/" + encodeURIComponent(TOKEN);
             var DIRECT = location.origin + "/dl/" + encodeURIComponent(TOKEN);
             var POSTER = location.origin + "/poster/" + encodeURIComponent(TOKEN);
+            var FILEURL = location.origin + "/file/" + encodeURIComponent(TOKEN);
             var POS_KEY = "wzx:pos:" + TOKEN;
             var PREF_KEY = "wzx:prefs";
 
@@ -2339,6 +2347,7 @@
                 el("now").textContent = FILE;
                 el("dl").href = DIRECT;
                 el("dl").setAttribute("download", FILE);
+                el("tgfile").href = FILEURL;
                 buildApps();
                 applySubStyle();
                 showArt();

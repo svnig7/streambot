@@ -327,14 +327,39 @@
                 transform .25s cubic-bezier(.2, .8, .3, 1);
         }
 
+        .tg {
+            position: absolute;
+            right: 3.15rem;
+            bottom: .78rem;
+            width: 2.1rem;
+            height: 2.1rem;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--accent-soft);
+            border: 1px solid var(--line);
+            color: var(--muted);
+            transform: scale(.9);
+            transition: color .2s ease, border-color .2s ease, background .2s ease,
+                transform .25s cubic-bezier(.2, .8, .3, 1);
+        }
+
         .item:hover .dl,
-        .item:focus-within .dl {
+        .item:focus-within .dl,
+        .item:hover .tg,
+        .item:focus-within .tg {
             transform: scale(1);
             color: var(--text);
             border-color: rgba(93, 157, 255, .5);
         }
 
         .dl svg {
+            width: 15px;
+            height: 15px;
+            fill: currentColor;
+        }
+
+        .tg svg {
             width: 15px;
             height: 15px;
             fill: currentColor;
@@ -454,12 +479,20 @@
                 height: 1.85rem;
                 transform: scale(1);
             }
+
+            .tg {
+                width: 1.85rem;
+                height: 1.85rem;
+                right: 2.85rem;
+                transform: scale(1);
+            }
         }
 
         @media (hover: none) {
 
             .play,
-            .dl {
+            .dl,
+            .tg {
                 opacity: 1;
                 transform: scale(1);
             }
@@ -582,6 +615,8 @@
             var DOWN = '<svg viewBox="0 0 24 24" aria-hidden="true">'
                 + '<path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17.4l-4.7-4.7 1.4-1.4 3.3 3.3V3h2z'
                 + 'M5 19h14v2H5v-2z"/></svg>';
+            var TG = '<svg viewBox="0 0 24 24" aria-hidden="true">'
+                + '<path d="M21.94 3.63a1.6 1.6 0 0 0-1.66-.2L2.4 10.6a1.53 1.53 0 0 0 .1 2.87l4.5 1.42 1.74 5.6a1.5 1.5 0 0 0 2.47.6l2.5-2.3 4.4 3.24a1.55 1.55 0 0 0 2.45-.93l3.36-15.6a1.6 1.6 0 0 0-.98-1.87ZM9.3 14.9l-1.1 3.5-1.05-3.4 10.9-8.05Zm2.02 2.55-.9-.66 8.35-8.7-9.7 8.6-.03.03Z"/></svg>';
 
             function card(item, index, poster) {
                 var wrap = document.createElement("div");
@@ -642,6 +677,16 @@
                 dl.setAttribute("aria-label", "Download " + item.name);
                 dl.innerHTML = DOWN;
                 wrap.appendChild(dl);
+
+                var tg = document.createElement("a");
+                tg.className = "tg";
+                tg.href = "/file/" + item.token;
+                tg.target = "_blank";
+                tg.rel = "noopener";
+                tg.title = "Get " + item.name + " in Telegram";
+                tg.setAttribute("aria-label", "Get " + item.name + " in Telegram");
+                tg.innerHTML = TG;
+                wrap.appendChild(tg);
 
                 return wrap;
             }
