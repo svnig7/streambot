@@ -41,30 +41,30 @@ async def is_user_joined(bot, message: Message):
         except UserNotParticipant:
             buttons = []
             if Telegram.FORCE_SUB_ID:
-                buttons.append(InlineKeyboardButton("📢 ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ", url=Telegram.FORCE_SUB_LINK))
+                buttons.append(InlineKeyboardButton("📢 Join Channel", url=Telegram.FORCE_SUB_LINK))
             if Telegram.FORCE_SUB_GROUP_ID:
-                buttons.append(InlineKeyboardButton("👥 ᴊᴏɪɴ ɢʀᴏᴜᴘ", url=Telegram.FORCE_SUB_GROUP_LINK))
+                buttons.append(InlineKeyboardButton("👥 Join Group", url=Telegram.FORCE_SUB_GROUP_LINK))
 
             # Add Refresh button in new row
-            buttons_markup = [buttons, [InlineKeyboardButton("✅ ʀᴇғʀᴇsʜ", callback_data="refresh_join")]]
+            buttons_markup = [buttons, [InlineKeyboardButton("✅ Refresh", callback_data="refresh_join")]]
 
             if Telegram.VERIFY_PIC:
                 ver = await message.reply_photo(
                     photo=Telegram.VERIFY_PIC,
-                    caption="ᴘʟᴇᴀsᴇ ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ ᴀɴᴅ ɢʀᴏᴜᴘ ᴛᴏ ᴜsᴇ ᴍᴇ 🔐",
+                    caption="Please join the channel and group to use me 🔐",
                     parse_mode=ParseMode.HTML,
                     reply_markup=InlineKeyboardMarkup(buttons_markup)
                 )
             else:
                 ver = await message.reply_text(
-                    text="<b>ᴘʟᴇᴀsᴇ ᴊᴏɪɴ ʙᴏᴛʜ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ 🔐</b>",
+                    text="<b>Please join both to continue 🔐</b>",
                     parse_mode=ParseMode.HTML,
                     reply_markup=InlineKeyboardMarkup(buttons_markup)
                 )
             return False
         except Exception:
             await message.reply_text(
-                text=f"⚠️ ᴇʀʀᴏʀ. ᴄᴏɴᴛᴀᴄᴛ <a href='https://t.me/cntct_7bot'>ᴅᴇᴠᴇʟᴏᴘᴇʀ</a>",
+                text=f"⚠️ Error. Contact <a href='https://t.me/cntct_7bot'>developer</a>",
                 parse_mode=ParseMode.HTML,
                 disable_web_page_preview=True
             )
@@ -234,7 +234,7 @@ async def is_channel_banned(bot, message):
             chat_id=message.chat.id,
             message_id=message.id,
             reply_markup=InlineKeyboardMarkup([[
-                InlineKeyboardButton(f"ᴄʜᴀɴɴᴇʟ ɪs ʙᴀɴɴᴇᴅ", callback_data="N/A")]])
+                InlineKeyboardButton(f"Channel is banned", callback_data="N/A")]])
         )
         return True
     return False
@@ -250,7 +250,7 @@ async def is_user_authorized(message):
 
         if not (user_id in Telegram.AUTH_USERS):
             await message.reply_text(
-                text="ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴀᴜᴛʜᴏʀɪᴢᴇᴅ ᴛᴏ ᴜsᴇ ᴛʜɪs ʙᴏᴛ.",
+                text="You are not authorized to use this bot.",
                 parse_mode=ParseMode.MARKDOWN,
                 disable_web_page_preview=True
             )
@@ -265,7 +265,7 @@ async def is_user_exist(bot, message):
         await db.add_user(message.from_user.id)
         await bot.send_message(
             Telegram.ULOG_CHANNEL,
-            f"**#ɴᴇᴡᴜsᴇʀ**\n**⬩ ᴜsᴇʀ ɴᴀᴍᴇ :** [{message.from_user.first_name}](tg://user?id={message.from_user.id})\n**⬩ ᴜsᴇʀ ɪᴅ :** `{message.from_user.id}`"
+            f"**#newuser**\n**⬩ user name :** [{message.from_user.first_name}](tg://user?id={message.from_user.id})\n**⬩ user id :** `{message.from_user.id}`"
         )
 
 async def is_channel_exist(bot, message):
@@ -274,7 +274,7 @@ async def is_channel_exist(bot, message):
         members = await bot.get_chat_members_count(message.chat.id)
         await bot.send_message(
             Telegram.ULOG_CHANNEL,
-            f"**#ɴᴇᴡᴄʜᴀɴɴᴇʟ** \n**⬩ ᴄʜᴀᴛ ɴᴀᴍᴇ :** `{message.chat.title}`\n**⬩ ᴄʜᴀᴛ ɪᴅ :** `{message.chat.id}`\n**⬩ ᴛᴏᴛᴀʟ ᴍᴇᴍʙᴇʀs :** `{members}`"
+            f"**#newchannel** \n**⬩ chat name :** `{message.chat.title}`\n**⬩ chat id :** `{message.chat.id}`\n**⬩ total members :** `{members}`"
         )
 
 async def verify_user(bot, message):

@@ -116,7 +116,7 @@ async def handle_channel_album(bot, message):
                 message_id=message.id,
                 reply_markup=InlineKeyboardMarkup(
                     [[InlineKeyboardButton(
-                        "sᴛʀᴇᴀᴍ / ᴅᴏᴡɴʟᴏᴀᴅ (ᴘʟᴀʏʟɪsᴛ)",
+                        "Stream / Download (Playlist)",
                         url=f"{Server.URL}playlist/{token}",
                     )]]
                 ),
