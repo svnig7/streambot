@@ -129,16 +129,9 @@ def get_file_info(message):
 
 
 def build_resend_caption(file_info: dict) -> str:
-    """Filename plus the original metadata caption (if any), used whenever
-    the bot resends a file (Get File, and the FLOG_CHANNEL log copy) -
-    plain text, no forced code/blockquote formatting."""
-    file_name = file_info.get("file_name") or ""
-    parts = [html.escape(file_name)]
-    caption_html = file_info.get("caption_html")
-    if caption_html:
-        parts.append(caption_html)
-    return "\n\n".join(parts)
-
+    """Use only the original filename as the caption."""
+    file_name = file_info.get("file_name") or "file"
+    return html.escape(file_name)
 
 async def resend_media(client: Client, chat_id, file_info: dict, reply_to_message_id=None, caption_override=None):
     """Resends a stored file exactly as it was originally uploaded - same
