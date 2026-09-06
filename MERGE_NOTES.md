@@ -284,3 +284,29 @@ running an existing streambot deployment as-is.
   wrapping added in Round 6 is gone; `build_resend_caption()` is back to
   plain text - the (HTML-escaped) filename followed by the original
   caption, no forced formatting.
+
+## Round 8: plain font everywhere, restructured start-menu buttons
+
+- **Stylized small-caps Unicode font removed repo-wide.** All 24 stylized
+  characters (ᴀᴃᴄᴅᴇғɢʜɪᴊᴋʟᴍɴᴏᴘǫʀᴛᴜᴠᴡʏᴢ) used throughout `README.md` and
+  every bot plugin/util file for that faux small-caps look have been
+  replaced with plain ASCII letters, then manually re-cased (proper
+  sentence/title case) for readability - the mechanical swap alone left
+  everything lowercase, so this was a two-pass job (character
+  substitution, then casing). Covered: `translation.py` (all bot text and
+  button labels), `start.py`, `callback.py`, `admin.py`, `stream.py`,
+  `links.py`, `bot_utils.py`, `playlist_utils.py`, `README.md`.
+  Throughout, `callback_data` values (internal routing keys the bot
+  matches against, e.g. `callback_data="close"`) were left untouched even
+  where the visible button label changed - those aren't user-facing text
+  and must stay exactly what the routing `if usr_cmd[0] == "..."` checks
+  expect.
+- **Start-menu buttons restructured.** New `UPDATES_GROUP` env var
+  (`Telegram.UPDATES_GROUP`, alongside the existing `UPDATES_CHANNEL`).
+  `BUTTON.START_BUTTONS` in `translation.py` is now:
+  - Row 1: Update Channel | Update Group
+  - Row 2: Help | About
+  - Row 3: Close
+
+  (`HELP_BUTTONS`/`ABOUT_BUTTONS` were left in their existing layout -
+  only the start message's buttons were asked to change.)

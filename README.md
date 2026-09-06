@@ -1,4 +1,4 @@
-<h1 align="center">sᴛʀᴇᴀᴍ ʙᴏᴛ</h1>
+<h1 align="center">stream bot</h1>
 <p align="center">
   <a href="https://github.com/svnig7/streambot">
     <img src="https://raw.githubusercontent.com/svnig7/images/refs/heads/main/streambotl.png" alt="Cover Image" width="550">
@@ -158,25 +158,25 @@ PORT = 8080
 #### ‍☠️ Bot Commands :
 
 ```sh
-start - ᴛᴏ ᴄʜᴇᴄᴋ ᴛʜᴇ ʙᴏᴛ ɪs ᴀʟɪᴠᴇ ᴏʀ ɴᴏᴛ.
-help - ᴛᴏ ɢᴇᴛ ʜᴇʟᴘ ᴍᴇssᴀɢᴇ.
-about - ᴛᴏ ᴄʜᴇᴄᴋ ᴀʙᴏᴜᴛ ᴛʜᴇ ʙᴏᴛ.
-files - ᴛᴏ ɢᴇᴛ ᴀʟʟ ғɪʟᴇs ʟɪsᴛ ᴏғ ᴜsᴇʀ.
-del - ᴛᴏ ᴅᴇʟᴇᴛᴇ ғɪʟᴇs ғʀᴏᴍ ᴅʙ ᴡɪᴛʜ ғɪʟᴇɪᴅ. [ᴀᴅᴍɪɴ]
-ban - ᴛᴏ ʙᴀɴ ᴀɴʏ ᴄʜᴀɴɴᴇʟ ᴏʀ ᴜsᴇʀ ᴛᴏ ᴜsᴇ ʙᴏᴛ. [ᴀᴅᴍɪɴ]
-unban - ᴛᴏ ᴜɴʙᴀɴ ᴀɴʏ ᴄʜᴀɴɴᴇʟ ᴏʀ ᴜsᴇʀ ᴛᴏ ᴜsᴇ ʙᴏᴛ. [ᴀᴅᴍɪɴ]
-status - ᴛᴏ ɢᴇᴛ ʙᴏᴛ sᴛᴀᴛᴜs ᴀɴᴅ ᴛᴏᴛᴀʟ ᴜsᴇʀs. [ᴀᴅᴍɪɴ]
-broadcast - ᴛᴏ ʙʀᴏᴀᴅᴄᴀsᴛ ᴀɴʏ ᴍᴇssᴀɢᴇ ᴛᴏ ᴀʟʟ ᴜsᴇʀs ᴏғ ʙᴏᴛ. [ᴀᴅᴍɪɴ]
+start - to check the bot is alive or not.
+help - to get help message.
+about - to check about the bot.
+files - to get all files list of user.
+del - to delete files from db with fileid. [admin]
+ban - to ban any channel or user to use bot. [admin]
+unban - to unban any channel or user to use bot. [admin]
+status - to get bot status and total users. [admin]
+broadcast - to broadcast any message to all users of bot. [admin]
 ```
 
 #### 🍟 Channel Support :
 
-*Bot also Supported with Channels. Just add bot Channel as Admin. If any new file comes in Channel it will edit it with **sᴛʀᴇᴀᴍ / ᴅᴏᴡɴʟᴏᴀᴅ** Button.*
+*Bot also Supported with Channels. Just add bot Channel as Admin. If any new file comes in Channel it will edit it with **stream / download** Button.*
 
 </details>
 
 ### ❤️ To :
 
-- [**sᴠɴ**](https://github.com/svnig7) : for his [sᴛʀᴇᴀᴍ ʙᴏᴛ](https://github.com/svnig7/streambot)
+- [**svn**](https://github.com/svnig7) : for his [stream bot](https://github.com/svnig7/streambot)
 
 ---
