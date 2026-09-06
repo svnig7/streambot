@@ -12,6 +12,7 @@ class Telegram:
     WORKERS = int(env.get("WORKERS", "6"))  # 6 workers = 6 commands at once
     DATABASE_URL = str(env.get('DATABASE_URL'))
     UPDATES_CHANNEL = str(env.get('UPDATES_CHANNEL', "bots_7_bots"))
+    UPDATES_GROUP = str(env.get('UPDATES_GROUP', "bots_7_bots_support"))
     SESSION_NAME = str(env.get('SESSION_NAME', 'streambot'))
     FORCE_SUB_ID = env.get('FORCE_SUB_ID', None)
     FORCE_SUB_LINK = str(env.get('FORCE_SUB_LINK', 'https://t.me/bots_7_bots'))
