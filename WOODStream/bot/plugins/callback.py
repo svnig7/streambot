@@ -165,19 +165,19 @@ async def gen_file_menu(_id, file_list_no, update: CallbackQuery):
     if "video" in file_type.lower():
         MYFILES_BUTTONS = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("STREAM", url=page_link), InlineKeyboardButton("DOWNLOAD", url=stream_link)],
-                [InlineKeyboardButton("GET FILE", callback_data=f"sendfile_{myfile_info['_id']}"),
-                 InlineKeyboardButton("REVOKE", callback_data=f"msgdelete_{myfile_info['_id']}_{file_list_no}")],
-                [InlineKeyboardButton("BACK", callback_data="userfiles_{}".format(file_list_no))]
+                [InlineKeyboardButton("Stream", url=page_link), InlineKeyboardButton("Download", url=stream_link)],
+                [InlineKeyboardButton("Get File", callback_data=f"sendfile_{myfile_info['_id']}"),
+                 InlineKeyboardButton("Revoke", callback_data=f"msgdelete_{myfile_info['_id']}_{file_list_no}")],
+                [InlineKeyboardButton("Back", callback_data="userfiles_{}".format(file_list_no))]
             ]
         )
     else:
         MYFILES_BUTTONS = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("STREAM", url=page_link), InlineKeyboardButton("DOWNLOAD", url=stream_link)],
-                [InlineKeyboardButton("GET FILE", callback_data=f"sendfile_{myfile_info['_id']}"),
-                 InlineKeyboardButton("REVOKE", callback_data=f"msgdelete_{myfile_info['_id']}_{file_list_no}")],
-                [InlineKeyboardButton("BACK", callback_data="userfiles_{}".format(file_list_no))]
+                [InlineKeyboardButton("Stream", url=page_link), InlineKeyboardButton("Download", url=stream_link)],
+                [InlineKeyboardButton("Get File", callback_data=f"sendfile_{myfile_info['_id']}"),
+                 InlineKeyboardButton("Revoke", callback_data=f"msgdelete_{myfile_info['_id']}_{file_list_no}")],
+                [InlineKeyboardButton("Back", callback_data="userfiles_{}".format(file_list_no))]
             ]
         )
 
@@ -185,7 +185,7 @@ async def gen_file_menu(_id, file_list_no, update: CallbackQuery):
     if type(TiMe) == float:
         date = datetime.datetime.fromtimestamp(TiMe)
     await update.edit_message_caption(
-        caption="**File name:** `{}`\n**File size:** `{}`\n**File type:** `{}`\n**Created on:** `{}`".format(myfile_info['file_name'],
+        caption="**File Name:** `{}`\n**File Size:** `{}`\n**File Type:** `{}`\n**Created on:** `{}`".format(myfile_info['file_name'],
                                                                                                                     humanbytes(int(myfile_info['file_size'])),
                                                                                                                     file_type,
                                                                                                                     TiMe if isinstance(TiMe,str) else date.date()),
